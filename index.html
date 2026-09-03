@@ -1,0 +1,2075 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-50 transition-colors duration-300">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgriHelp Mini - Interactive Crop Advisory Dashboard</title>
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="AgriHelp Mini is a premium agricultural dashboard providing real-time crop advisories based on local temperature, soil moisture, humidity, and soil pH levels.">
+  <meta name="keywords" content="AgriHelp, Agriculture Dashboard, Smart Farming, Crop Advisory, Soil Moisture, Rice, Cotton, Sugarcane, Soil pH, Crop Stages">
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome for Premium Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <!-- Google Fonts - Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Chart.js for premium visualization -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Custom Configuration for Tailwind & Custom Slider Styles -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            emerald: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              200: '#bbf7d0',
+              300: '#86efac',
+              400: '#4ade80',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              800: '#166534',
+              900: '#14532d',
+              950: '#052e16',
+            },
+          },
+        },
+      },
+    }
+  </script>
+  <style>
+    /* Custom styling for Range Sliders */
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #16a34a; /* emerald-600 */
+      cursor: pointer;
+      border: 3px solid #ffffff;
+      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      transition: all 0.15s ease-in-out;
+    }
+    .dark input[type="range"]::-webkit-slider-thumb {
+      border-color: #1e293b;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover {
+      background: #15803d; /* emerald-700 */
+      transform: scale(1.15);
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #16a34a;
+      cursor: pointer;
+      border: 3px solid #ffffff;
+      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      transition: all 0.15s ease-in-out;
+    }
+    .dark input[type="range"]::-moz-range-thumb {
+      border-color: #1e293b;
+    }
+    input[type="range"]::-moz-range-thumb:hover {
+      background: #15803d;
+      transform: scale(1.15);
+    }
+    /* Smooth transition for elements */
+    .advisory-transition {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .animate-spin-slow {
+      animation: spin 8s linear infinite;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .glow-pulse {
+      animation: glowPulse 2.5s infinite alternate;
+    }
+    @keyframes glowPulse {
+      0% {
+        box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+        transform: scale(0.98);
+      }
+      100% {
+        box-shadow: 0 0 30px rgba(16, 185, 129, 0.6);
+        transform: scale(1.02);
+      }
+    }
+    .glass-card {
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      background-color: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(226, 232, 240, 0.5);
+      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.03), 0 2px 4px -2px rgb(0 0 0 / 0.03);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .dark .glass-card {
+      background-color: rgba(15, 23, 42, 0.5);
+      border: 1px solid rgba(51, 65, 85, 0.3);
+    }
+    .glass-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(16, 185, 129, 0.25);
+      box-shadow: 0 12px 20px -3px rgba(16, 185, 129, 0.06), 0 4px 6px -4px rgba(16, 185, 129, 0.06);
+    }
+    .mesh-gradient {
+      background-color: #f8fafc;
+      background-image: radial-gradient(at top right, rgba(16, 185, 129, 0.05), transparent 50%),
+                        radial-gradient(at bottom left, rgba(59, 130, 246, 0.03), transparent 50%);
+    }
+    .dark .mesh-gradient {
+      background-color: #020617;
+      background-image: radial-gradient(at top right, rgba(16, 185, 129, 0.08), transparent 45%),
+                        radial-gradient(at bottom left, rgba(59, 130, 246, 0.04), transparent 45%);
+    }
+  </style>
+</head>
+<body class="h-full text-slate-800 dark:text-slate-200 antialiased flex flex-col mesh-gradient transition-colors duration-300">
+
+  <!-- Entry Landing Splash Screen Overlay -->
+  <div id="splash-screen" class="fixed inset-0 z-50 bg-slate-950 flex flex-col items-center justify-center text-white p-6 transition-all duration-700 ease-in-out">
+    <!-- Glowing background elements -->
+    <div class="absolute w-[400px] h-[400px] bg-emerald-500/10 rounded-full blur-3xl -top-20 -left-20 animate-pulse"></div>
+    <div class="absolute w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-3xl -bottom-20 -right-20 animate-pulse" style="animation-delay: 1.5s;"></div>
+
+    <div class="max-w-md w-full text-center space-y-8 flex flex-col items-center relative z-10">
+      <!-- Icon Container -->
+      <div class="h-24 w-24 bg-emerald-950 border border-emerald-500/30 rounded-3xl flex items-center justify-center text-emerald-400 glow-pulse">
+        <i class="fa-solid fa-leaf text-5xl"></i>
+      </div>
+
+      <!-- Text Header -->
+      <div class="space-y-3">
+        <h1 class="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-emerald-100 to-emerald-400 bg-clip-text text-transparent">
+          AgriHelp Mini / அக்ரிஹெல்ப் மினி
+        </h1>
+        <p class="text-sm text-emerald-400 font-bold tracking-widest uppercase">
+          Precision Farm Advisory Hub / துல்லிய பயிர் ஆலோசனை மையம்
+        </p>
+        <p class="text-xs text-slate-400 max-w-sm mx-auto leading-relaxed">
+          Analyzes weather trends and soil lab diagnostics to deliver real-time, actionable precision agriculture insights to South Indian farmers.
+        </p>
+      </div>
+
+      <!-- Loading Section -->
+      <div id="splash-loading-section" class="w-full space-y-3">
+        <!-- Progress Counter -->
+        <div class="flex justify-between items-center text-[10px] text-slate-405 font-mono">
+          <span id="splash-status-text">Synchronizing sensors... / வானிலை சென்சார்களுடன் இணைகிறது...</span>
+          <span id="splash-percent">0%</span>
+        </div>
+        <!-- Progress Bar Track -->
+        <div class="w-full bg-slate-900 border border-slate-800 h-2.5 rounded-full overflow-hidden p-0.5">
+          <div id="splash-progress-bar" class="h-full bg-emerald-500 rounded-full w-0 transition-all duration-200"></div>
+        </div>
+      </div>
+
+      <!-- Enter Dashboard Button (Hidden initially, will fade-in) -->
+      <button id="enter-dash-btn" class="hidden opacity-0 transform translate-y-4 px-8 py-3.5 text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 rounded-2xl shadow-lg hover:shadow-emerald-500/20 focus:outline-none transition-all duration-500 border border-emerald-400/20">
+        Enter Smart Dashboard / உள்நுழைக <i class="fa-solid fa-circle-arrow-right ml-2 text-sm animate-bounce inline-block"></i>
+      </button>
+    </div>
+
+    <!-- Footer of Splash Page -->
+    <div class="absolute bottom-8 text-[10px] text-slate-500 font-semibold tracking-wider uppercase z-10 flex items-center gap-2">
+      <i class="fa-solid fa-circle-nodes text-emerald-500 animate-pulse"></i>
+      South India Regional Agriculture Grid / தென்னிந்திய மண்டல வேளாண் வலையமைப்பு
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shadow-sm transition-colors duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="h-10 w-10 bg-emerald-100 dark:bg-emerald-950/40 rounded-xl flex items-center justify-center text-emerald-700 dark:text-emerald-400 shadow-inner">
+          <i class="fa-solid fa-leaf text-xl animate-pulse"></i>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center">
+            AgriHelp <span class="text-emerald-600 dark:text-emerald-400 ml-1 font-semibold text-sm px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/40 rounded-full">Mini / மினி</span>
+          </h1>
+          <p class="text-[10px] text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">Smart Advisory Dashboard / திறன்மிகு வேளாண் ஆலோசனை மையம்</p>
+        </div>
+      </div>
+      
+      <div class="flex items-center space-x-4">
+        <!-- Live System Status Dot -->
+        <span class="inline-flex items-center gap-x-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 px-2 py-1 text-xs font-medium text-emerald-700 dark:text-emerald-300 ring-1 ring-inset ring-emerald-600/20 dark:ring-emerald-500/20">
+          <svg class="h-1.5 w-1.5 fill-emerald-500 dark:fill-emerald-400" viewBox="0 0 6 6" aria-hidden="true">
+            <circle cx="3" cy="3" r="3" />
+          </svg>
+          Sensor Sync Active / சென்சார்கள் இணைக்கப்பட்டுள்ளது
+        </span>
+        <div class="text-right hidden sm:block">
+          <div class="text-sm font-semibold text-slate-800 dark:text-slate-200" id="live-time">Jul 1, 2026 - 12:40 PM</div>
+          <div class="text-xs text-slate-400 dark:text-slate-500">Station ID: #302A / மண்டல நிலையம்</div>
+        </div>
+        
+        <!-- Dark Mode Toggle Button -->
+        <button id="theme-toggle" class="h-10 w-10 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-center transition-all shadow-sm focus:outline-none" title="Toggle theme">
+          <i class="fa-solid fa-moon text-lg dark:hidden"></i>
+          <i class="fa-solid fa-sun text-lg hidden dark:block text-yellow-400"></i>
+        </button>
+
+        <!-- User Authentication Section -->
+        <div class="relative" id="user-auth-section">
+          <!-- Sign In Button (Shown when logged out) -->
+          <button id="signin-btn" class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-sm transition-all focus:outline-none">
+            <i class="fa-solid fa-user-check"></i> Sign In / உள்நுழைக
+          </button>
+
+          <!-- User Profile Dropdown Trigger (Hidden when logged out) -->
+          <button id="profile-btn" class="hidden h-10 w-10 rounded-xl bg-emerald-100 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/40 flex items-center justify-center text-emerald-800 dark:text-emerald-400 focus:outline-none relative overflow-hidden">
+            <i class="fa-solid fa-user text-base" id="avatar-icon"></i>
+            <span class="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-500 border-2 border-white dark:border-slate-900"></span>
+          </button>
+
+          <!-- Profile Dropdown Menu -->
+          <div id="profile-dropdown" class="hidden absolute right-0 mt-2 w-56 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-lg py-2 z-50 text-xs text-slate-700 dark:text-slate-350">
+            <div class="px-4 py-2 border-b border-slate-100 dark:border-slate-800">
+              <p class="font-bold text-slate-900 dark:text-white" id="user-display-name">Farmer Karthik / விவசாயி கார்த்திக்</p>
+              <p class="text-[10px] text-slate-400 dark:text-slate-500 truncate" id="user-display-email">karthik@southindia.agri</p>
+            </div>
+            <div class="py-1">
+              <div class="px-4 py-2 flex items-center justify-between">
+                <span class="text-slate-400">Region: / மண்டலம்:</span>
+                <span class="font-bold text-emerald-600 dark:text-emerald-400" id="user-display-region">Tamil Nadu / தமிழ்நாடு</span>
+              </div>
+            </div>
+            <div class="border-t border-slate-100 dark:border-slate-800 mt-1 py-1">
+              <button id="signout-btn" class="w-full text-left px-4 py-2 text-red-655 dark:text-red-400 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2 font-semibold">
+                <i class="fa-solid fa-right-from-bracket text-red-500"></i> Sign Out / வெளியேறுக
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col space-y-10">
+
+    <!-- Overarching Heat Warning Container (Absolute top alert) -->
+    <div id="global-alert-container" class="hidden transform transition-all duration-300 scale-95 opacity-0">
+      <div class="bg-red-50 dark:bg-red-950/20 border-l-4 border-red-600 p-4 rounded-r-xl shadow-sm flex items-start gap-4">
+        <div class="flex-shrink-0 text-red-600 mt-0.5">
+          <i class="fa-solid fa-triangle-exclamation text-2xl animate-bounce"></i>
+        </div>
+        <div class="flex-grow">
+          <h3 class="text-base font-bold text-red-900 dark:text-red-300">Critical Heat Warning / முக்கிய வெப்ப எச்சரிக்கை</h3>
+          <p class="text-sm text-red-700 dark:text-red-400 mt-1" id="global-alert-text">
+            Extreme Ambient Temperature Alert! Ensure emergency crop shading or high-frequency cooling irrigation is deployed immediately. / அதிக வெப்ப எச்சரிக்கை! பயிர் பாதுகாப்பிற்கான நிழல் வலைகள் அமைப்பதையோ அல்லது தெளிப்பு நீர்ப்பாசன முறையையோ உடனடியாக மேற்கொள்ளவும்.
+          </p>
+        </div>
+        <div class="flex-shrink-0">
+          <span class="inline-flex items-center rounded-md bg-red-100 dark:bg-red-900/60 px-2.5 py-0.5 text-xs font-bold text-red-800 dark:text-red-200 uppercase tracking-wider">
+            Critical Global
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Primary Dashboard Navigation Tabs -->
+    <div class="backdrop-blur-md bg-white/70 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/40 p-2.5 rounded-3xl shadow-md flex flex-wrap gap-3 transition-colors duration-300">
+      <button id="nav-advisories" class="flex-1 min-w-[120px] py-3.5 px-4 text-xs sm:text-sm font-bold rounded-2xl flex items-center justify-center gap-2 bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 focus:outline-none transition-all">
+        <i class="fa-solid fa-leaf"></i> Advisory Hub / ஆலோசனை மையம்
+      </button>
+      <button id="nav-analytics" class="flex-1 min-w-[120px] py-3.5 px-4 text-xs sm:text-sm font-bold rounded-2xl flex items-center justify-center gap-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/30 focus:outline-none transition-all">
+        <i class="fa-solid fa-chart-line"></i> Crop Analytics / பயிர் பகுப்பாய்வு
+      </button>
+      <button id="nav-soil" class="flex-1 min-w-[120px] py-3.5 px-4 text-xs sm:text-sm font-bold rounded-2xl flex items-center justify-center gap-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/30 focus:outline-none transition-all">
+        <i class="fa-solid fa-file-medical          <div class="border-b border-slate-100 dark:border-slate-800 pb-4">
+            <h2 class="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+              <i class="fa-solid fa-sliders text-emerald-600"></i> Environmental Controls / சுற்றுச்சூழல் கட்டுப்பாடுகள்
+            </h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Adjust sliders to simulate local crop conditions. / ஸ்லைடர்களை மாற்றி மண்டல வானிலையை உருவகப்படுத்தவும்.</p>
+          </div>
+
+          <!-- Crop Selection Dropdown -->
+          <div class="space-y-2">
+            <label for="crop-select" class="block text-sm font-semibold text-slate-700 dark:text-slate-350 flex justify-between items-center">
+              <span>Target Crop Cultivar / பயிர் வகை</span>
+              <span id="crop-badge" class="text-xs font-medium text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-100 dark:border-emerald-900/40">Rice</span>
+            </label>
+            <div class="relative rounded-lg shadow-sm">
+              <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                <i class="fa-solid fa-wheat-awn text-emerald-600" id="crop-icon"></i>
+              </div>
+              <select id="crop-select" class="block w-full rounded-xl border border-slate-200 dark:border-slate-700 py-3 pl-10 pr-10 text-slate-900 dark:text-slate-100 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 text-sm font-medium bg-slate-50/50 dark:bg-slate-800/40 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                <option value="Rice" selected>Rice (Oryza sativa) / நெல்</option>
+                <option value="Cotton">Cotton (Gossypium) / பருத்தி</option>
+                <option value="Sugarcane">Sugarcane (Saccharum officinarum) / கரும்பு</option>
+                <option value="Ragi">Ragi (Finger Millet) / கேழ்வரகு</option>
+                <option value="Coconut">Coconut Palm (Thennai) / தென்னை</option>
+                <option value="Groundnut">Groundnut (Verkadalai) / நிலக்கடலை</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Growth Stage Dropdown -->
+          <div class="space-y-2">
+            <label for="stage-select" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 flex justify-between items-center">
+              <span>Crop Growth Stage / வளர்ச்சி நிலை</span>
+              <span id="stage-badge" class="text-xs font-medium text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-100 dark:border-emerald-900/40">Vegetative Growth</span>
+            </label>
+            <div class="relative rounded-lg shadow-sm">
+              <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                <i class="fa-solid fa-stairs text-emerald-600"></i>
+              </div>
+              <select id="stage-select" class="block w-full rounded-xl border border-slate-200 dark:border-slate-700 py-3 pl-10 pr-10 text-slate-900 dark:text-slate-100 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 text-sm font-medium bg-slate-50/50 dark:bg-slate-800/40 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                <option value="Germination">Germination / Seedling / முளைத்தல்</option>
+                <option value="Vegetative" selected>Vegetative Growth / வளரும் பருவம்</option>
+                <option value="Flowering">Flowering / Heading / பூக்கும் பருவம்</option>
+                <option value="Maturity">Maturity / Harvesting / அறுவடை பருவம்</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Temperature Control -->
+          <div class="space-y-3 bg-slate-50/50 dark:bg-slate-800/20 p-4 rounded-xl border border-slate-100 dark:border-slate-800/80">
+            <div class="flex justify-between items-center">
+              <label for="temp-slider" class="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                <i class="fa-solid fa-temperature-three-quarters text-orange-500"></i> Local Temperature / வெப்பநிலை
+              </label>
+              <span class="text-lg font-extrabold text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-950/40 border border-orange-100 dark:border-orange-900/40 px-2.5 py-0.5 rounded-lg font-mono" id="temp-value">28°C</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-bold text-slate-400 font-mono">15°C</span>
+              <input type="range" id="temp-slider" min="15" max="45" value="28" class="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500/20">
+              <span class="text-xs font-bold text-slate-400 font-mono">45°C</span>
+            </div>
+            <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden flex">
+              <div class="bg-blue-400 h-full" style="width: 33%"></div>
+              <div class="bg-yellow-400 h-full" style="width: 34%"></div>
+              <div class="bg-red-400 h-full" style="width: 33%"></div>
+            </div>
+            <div class="flex justify-between text-[10px] text-slate-400 font-semibold px-1">
+              <span>Cool / குளிர்ச்சி (&lt;25°C)</span>
+              <span>Moderate / மிதமானது (25-35°C)</span>
+              <span>Extreme / வெப்பம் (&gt;35°C)</span>
+            </div>
+          </div>
+
+          <!-- Soil Moisture Control -->
+          <div class="space-y-3 bg-slate-50/50 dark:bg-slate-800/20 p-4 rounded-xl border border-slate-100 dark:border-slate-800/80">
+            <div class="flex justify-between items-center">
+              <label for="moisture-slider" class="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                <i class="fa-solid fa-droplet text-blue-500"></i> Soil Moisture / மண் ஈரப்பதம்
+              </label>
+              <span class="text-lg font-extrabold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/40 px-2.5 py-0.5 rounded-lg font-mono" id="moisture-value">45%</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-bold text-slate-400 font-mono">0%</span>
+              <input type="range" id="moisture-slider" min="0" max="100" value="45" class="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500/20">
+              <span class="text-xs font-bold text-slate-400 font-mono">100%</span>
+            </div>
+            <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden flex">
+              <div class="bg-red-400 h-full" style="width: 30%"></div>
+              <div class="bg-yellow-400 h-full" style="width: 20%"></div>
+              <div class="bg-emerald-400 h-full" style="width: 50%"></div>
+            </div>
+            <div class="flex justify-between text-[10px] text-slate-400 font-semibold px-1">
+              <span>Critical / குறைவு (&lt;30%)</span>
+              <span>Warning / எச்சரிக்கை (30-50%)</span>
+              <span>Optimal / உகந்தது (&gt;50%)</span>
+            </div>
+          </div>
+
+          <!-- Air Humidity Control -->
+          <div class="space-y-3 bg-slate-50/50 dark:bg-slate-800/20 p-4 rounded-xl border border-slate-100 dark:border-slate-800/80">
+            <div class="flex justify-between items-center">
+              <label for="humidity-slider" class="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                <i class="fa-solid fa-cloud-sun-rain text-sky-500"></i> Air Humidity / காற்று ஈரப்பதம்
+              </label>
+              <span class="text-lg font-extrabold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/40 border border-sky-100 dark:border-sky-900/40 px-2.5 py-0.5 rounded-lg font-mono" id="humidity-value">60%</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-bold text-slate-400 font-mono">10%</span>
+              <input type="range" id="humidity-slider" min="10" max="100" value="60" class="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500/20">
+              <span class="text-xs font-bold text-slate-400 font-mono">100%</span>
+            </div>
+            <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden flex">
+              <div class="bg-amber-400 h-full" style="width: 30%"></div>
+              <div class="bg-emerald-400 h-full" style="width: 50%"></div>
+              <div class="bg-blue-400 h-full" style="width: 20%"></div>
+            </div>
+            <div class="flex justify-between text-[10px] text-slate-400 font-semibold px-1">
+              <span>Dry / வறண்டது (&lt;40%)</span>
+              <span>Optimal / உகந்தது (40-80%)</span>
+              <span>Humid / ஈரப்பதம் (&gt;80%)</span>
+            </div>
+          </div>
+
+          <!-- Soil pH Control -->
+          <div class="space-y-3 bg-slate-50/50 dark:bg-slate-800/20 p-4 rounded-xl border border-slate-100 dark:border-slate-800/80">
+            <div class="flex justify-between items-center">
+              <label for="ph-slider" class="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                <i class="fa-solid fa-flask text-purple-550"></i> Soil pH / மண் pH அளவு
+              </label>
+              <span class="text-lg font-extrabold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/40 border border-purple-100 dark:border-purple-900/40 px-2.5 py-0.5 rounded-lg font-mono" id="ph-value">6.5</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-bold text-slate-400 font-mono">3.0</span>
+              <input type="range" id="ph-slider" min="3.0" max="10.0" step="0.1" value="6.5" class="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500/20">
+              <span class="text-xs font-bold text-slate-400 font-mono">10.0</span>
+            </div>
+            <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden flex">
+              <div class="bg-red-400 h-full" style="width: 35%"></div>
+              <div class="bg-emerald-400 h-full" style="width: 30%"></div>
+              <div class="bg-blue-400 h-full" style="width: 35%"></div>
+            </div>
+            <div class="flex justify-between text-[10px] text-slate-400 font-semibold px-1">
+              <span>Acidic / அமிலத்தன்மை (&lt;5.5)</span>
+              <span>Neutral / நடுநிலை (5.5-7.5)</span>
+              <span>Alkaline / காரத்தன்மை (&gt;7.5)</span>
+            </div>��் pH அளவு / Soil pH
+              </label>
+              <span class="text-lg font-extrabold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/40 border border-purple-100 dark:border-purple-900/40 px-2.5 py-0.5 rounded-lg font-mono" id="ph-value">6.5</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-bold text-slate-400 font-mono">3.0</span>
+              <input type="range" id="ph-slider" min="3.0" max="10.0" step="0.1" value="6.5" class="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500/20">
+              <span class="text-xs font-bold text-slate-400 font-mono">10.0</span>
+            </div>
+            <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden flex">
+              <div class="bg-red-400 h-full" style="width: 35%"></div>
+              <div class="bg-emerald-400 h-full" style="width: 30%"></div>
+              <div class="bg-blue-400 h-full" style="width: 35%"></div>
+            </div>
+            <div class="flex justify-between text-[10px] text-slate-400 font-semibold px-1">
+              <span>அமிலத்தன்மை / Acidic (&lt;5.5)</span>
+              <span>நடுநிலை / Neutral (5.5-7.5)</span>
+              <span>காரத்தன்மை / Alkaline (&gt;7.5)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Crop Info Card (Visual aesthetic support) -->
+        <div class="bg-emerald-950 text-white rounded-2xl p-8 shadow-md relative overflow-hidden border border-emerald-900">
+          <div class="absolute -right-10 -bottom-10 opacity-10 text-9xl">
+            <i class="fa-solid fa-seedling"></i>
+          </div>
+          <h3 class="text-sm font-bold tracking-wider text-emerald-400 uppercase">பயிர் குணாதிசயங்கள் / Crop Characteristics</h3>
+          <div id="crop-profile" class="mt-3 space-y-2">
+            <h4 class="text-lg font-extrabold text-white" id="profile-name">Rice (Oryza sativa)</h4>
+            <p class="text-xs text-emerald-200 leading-relaxed" id="profile-desc">
+              Requires a warm, humid climate and consistently high moisture. Sensitive to drought, specifically during vegetative and head growth phases. Soil must be irrigated appropriately.</p>
+            <div class="grid grid-cols-2 gap-4 pt-3 border-t border-emerald-800 text-xs">
+              <div>
+                <span class="text-emerald-400 font-semibold block">நீர் தேவை / Water Demand</span>
+                <span class="font-bold text-white" id="profile-water">High (Flooded)</span>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold block">வெப்பநிலை வரம்பு / Ideal Temp Range</span>
+                <span class="font-bold text-white" id="profile-temp">20°C - 35°C</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Panel: Real-time Advisories (span 7) -->
+      <section class="lg:col-span-7 space-y-8">
+        <!-- Smart Advisory Feed -->
+        <div class="glass-card rounded-2xl p-8 flex flex-col">
+          <div class="border-b border-slate-100 dark:border-slate-800 pb-4 mb-6 flex justify-between items-center">
+            <div>
+              <h2 class="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                <i class="fa-solid fa-clipboard-list text-emerald-600"></i> திறன்மிகு ஆலோசனைத் தொகுப்பு / Smart Advisory Feed
+              </h2>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">பயிர் நிலை மற்றும் தற்போதைய அளவீடுகளுக்கு ஏற்ப உடனடி ஆலோசனைகள். / Real-time agricultural actions tailored to crop stage and current metrics.</p>
+            </div>
+            <span class="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-850 px-2.5 py-0.5 text-xs font-semibold text-slate-800 dark:text-slate-200" id="advisory-count">
+              0 செயலில் உள்ள ஆலோசனைகள் / Active Advisories
+            </span>
+          </div>
+
+          <!-- Advisories Feed list -->
+          <div id="advisory-feed" class="flex-grow space-y-6 min-h-[260px]">
+            <!-- Dynamic Advisory Cards will be injected here by JavaScript -->
+          </div>
+
+          <!-- Bottom Status Legend -->
+          <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between text-xs gap-3">
+            <span class="text-slate-400 dark:text-slate-500 font-medium">எச்சரிக்கை அளவுகள் / Alert Level Legend:</span>
+            <div class="flex items-center gap-4">
+              <span class="flex items-center gap-1.5 font-semibold text-red-600 dark:text-red-400">
+                <span class="h-2 w-2 rounded-full bg-red-600"></span> முக்கிய நடவடிக்கை / Critical Action
+              </span>
+              <span class="flex items-center gap-1.5 font-semibold text-amber-600 dark:text-amber-400">
+                <span class="h-2 w-2 rounded-full bg-amber-500"></span> முன்னெச்சரிக்கை எச்சரிக்கை / Precautionary Warning
+              </span>
+              <span class="flex items-center gap-1.5 font-semibold text-emerald-600 dark:text-emerald-400">
+                <span class="h-2 w-2 rounded-full bg-emerald-500"></span> சரியான நிலை / Conditions Optimal
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div> <!-- Close Tab 1 Pane -->
+
+    <!-- Tab 2: Crop Analytics Pane -->
+    <div id="pane-analytics" class="hidden transition-all duration-300">
+      <!-- Sensor Analytics Chart Card -->
+      <div class="glass-card rounded-2xl p-8 space-y-6">
+        <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <h2 class="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+              <i class="fa-solid fa-chart-line text-emerald-600"></i> சுற்றுச்சூழல் பகுப்பாய்வு / Environmental Analytics
+            </h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">தற்போதைய அமைப்புகளின் அடிப்படையில் 7 நாள் சுற்றுச்சூழல் போக்குகள். / Simulated 7-day environmental parameter trends based on current configurations.</p>
+          </div>
+          <button id="simulate-btn" class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/20 transition-colors">
+            <i class="fa-solid fa-rotate animate-spin-slow text-[10px]"></i> மீண்டும் உருவாக்கவும் / Regenerate Trend
+          </button>
+        </div>
+        <div class="relative w-full h-[320px]">
+          <canvas id="trend-chart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 3: Soil Diagnostics Pane -->
+    <div id="pane-soil" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-10 items-start transition-all">
+      <!-- Left Column: Soil report uploader, sandbox files, and saved reports history list (span 5) -->
+      <div class="lg:col-span-5 space-y-8">
+        <div class="glass-card rounded-2xl p-8 space-y-8">
+          <div class="border-b border-slate-100 dark:border-slate-800 pb-4">
+            <h2 class="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+              <i class="fa-solid fa-file-medical text-emerald-600"></i> மண் பரிசோதனை அறிக்கை / Soil Test Report
+            </h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">மண்ணின் வேதியியல் குறியீடு மற்றும் NPK தன்மைகளை அறிய பரிசோதனை அறிக்கையைப் பதிவேற்றவும். / Upload a lab-issued soil report (.txt, .json) to analyze chemical attributes and NPK profiles.</p>
+          </div>
+
+          <!-- Drop Zone -->
+          <div id="drop-zone" class="border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-emerald-500 dark:hover:border-emerald-500 rounded-2xl p-6 text-center cursor-pointer bg-slate-50/50 dark:bg-slate-800/20 transition-colors flex flex-col items-center justify-center min-h-[160px] relative">
+            <input type="file" id="file-input" class="hidden" accept=".txt,.json,.csv">
+            <i class="fa-solid fa-cloud-arrow-up text-3xl text-emerald-600 dark:text-emerald-500 mb-3"></i>
+            <p class="text-xs font-bold text-slate-800 dark:text-slate-200">மண் அறிக்கையை இங்கே இழுத்துப் போடவும் / Drag & drop soil report here</p>
+            <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-1">உரை கோப்புகள் (.txt) அல்லது JSON கோப்புகள் மட்டுமே / Supports plain text (.txt) or JSON files</p>
+            <button id="browse-btn" class="mt-3 px-3 py-1.5 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors shadow-sm">
+              கோப்புகளைத் தேர்ந்தெடு / Browse Files
+            </button>
+          </div>
+
+          <!-- File Upload Info Display -->
+          <div id="file-info" class="hidden p-3 rounded-xl border border-emerald-100 dark:border-emerald-950/40 bg-emerald-50/30 dark:bg-emerald-950/10 flex items-center justify-between">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <i class="fa-solid fa-file-invoice text-emerald-600 dark:text-emerald-400 text-lg flex-shrink-0"></i>
+              <div class="min-w-0">
+                <p id="file-name" class="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">soil_report.txt</p>
+                <p id="file-size" class="text-[10px] text-slate-400 dark:text-slate-500">1.2 KB</p>
+              </div>
+            </div>
+            <button id="remove-file-btn" class="text-slate-400 hover:text-red-500 transition-colors p-1" title="Remove report">
+              <i class="fa-solid fa-circle-xmark"></i>
+            </button>
+          </div>
+
+          <!-- Saved Soil Reports Section (Visible only when logged in) -->
+          <div id="saved-reports-section" class="hidden space-y-2.5 pt-2 border-t border-slate-100 dark:border-slate-800">
+            <div class="flex items-center justify-between">
+              <p class="text-xs font-semibold text-slate-700 dark:text-slate-350">சேமிக்கப்பட்ட மண் பரிசோதனை வரலாறு / Saved Soil Test History:</p>
+              <span id="saved-reports-count" class="text-[10px] font-bold text-slate-400">0 reports</span>
+            </div>
+            <ul id="saved-reports-list" class="space-y-2 max-h-[140px] overflow-y-auto pr-1">
+              <!-- User saved reports list items will be generated here -->
+            </ul>
+          </div>
+
+          <!-- Generate Sandbox Soil Reports -->
+          <div class="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+            <p class="text-xs font-semibold text-slate-700 dark:text-slate-350">மாதிரி மண் அறிக்கைகள் / Quick Testing / Sandbox Reports:</p>
+            <div class="grid grid-cols-2 gap-3">
+              <button id="gen-acidic-btn" class="px-3 py-3 text-[11px] font-bold bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-750 text-slate-850 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-center gap-2 shadow-sm transition-colors text-left">
+                <i class="fa-solid fa-flask text-red-500"></i> அமில மற்றும் குறைந்த NPK / Acidic & Low NPK
+              </button>
+              <button id="gen-alkaline-btn" class="px-3 py-3 text-[11px] font-bold bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-750 text-slate-855 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-center gap-2 shadow-sm transition-colors text-left">
+                <i class="fa-solid fa-vial-circle-check text-purple-500"></i> கார மற்றும் குறைந்த NPK / Alkaline & Low NPK
+              </button>
+            </div>
+            <button id="gen-optimal-btn" class="w-full px-2.5 py-2 text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/40 rounded-xl flex items-center justify-center gap-1.5 shadow-sm transition-colors">
+              <i class="fa-solid fa-circle-check"></i> சரியான மண் அறிக்கையை உருவாக்கு / Generate Perfect Soil Report
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Soil Advisory Feed -->
+      <div class="lg:col-span-7">
+        <div class="glass-card rounded-2xl p-8 flex flex-col min-h-[460px]">
+          <div class="border-b border-slate-100 dark:border-slate-800 pb-4 mb-6 flex justify-between items-center">
+            <div>
+              <h2 class="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                <i class="fa-solid fa-notes-medical text-emerald-600"></i> மண் ஆலோசனைத் தொகுப்பு / Soil Advisory Feed
+              </h2>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">உங்கள் மண் பரிசோதனை அறிக்கையிலிருந்து பெறப்பட்ட பரிந்துரைகள். / Recommendations and corrective actions derived from your soil report.</p>
+            </div>
+            <span class="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-850 px-2.5 py-0.5 text-xs font-semibold text-slate-800 dark:text-slate-200" id="soil-advisory-count">
+              0 active advisories
+            </span>
+          </div>
+
+          <div id="soil-advisory-feed" class="flex-grow space-y-6">
+            <!-- Dynamic Soil Advisory Cards will be injected here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 4: Field Tasks Checklist Pane -->
+    <div id="pane-tasks" class="hidden transition-all duration-300">
+      <!-- Task Checklist Card -->
+      <div class="glass-card rounded-2xl p-8 space-y-6 flex flex-col">
+        <div class="border-b border-slate-100 dark:border-slate-800 pb-4 flex justify-between items-center">
+          <div>
+            <h2 class="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+              <i class="fa-solid fa-list-check text-emerald-600"></i> வயல் பணிப் பட்டியல் / Action Checklist
+            </h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">தற்போதைய ஆலோசனை சுழற்சிக்கான பணிகளைக் கண்காணிக்கவும். / Track agricultural actions taken for the current advisory cycle.</p>
+          </div>
+          <span id="checklist-progress" class="inline-flex items-center rounded-full bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
+            0 / 0 முடிந்தது / Done
+          </span>
+        </div>
+        <div id="checklist-empty" class="flex flex-col items-center justify-center py-8 text-center text-slate-400 dark:text-slate-500">
+          <i class="fa-solid fa-clipboard-check text-3xl mb-2 text-slate-350 dark:text-slate-800"></i>
+          <p class="text-xs font-medium">நடவடிக்கைகள் எதுவும் இன்னும் சேர்க்கப்படவில்லை. / No actions added yet.</p>
+          <p class="text-[10px] mt-0.5">பணிகளைச் சேர்க்க மேலே உள்ள ஆலோசனைகளில் "Add Checklist" என்பதை கிளிக் செய்யவும். / Click "Add Checklist" on advisories above to populate tasks.</p>
+        </div>
+        <ul id="checklist-items" class="space-y-2.5 max-h-[220px] overflow-y-auto pr-1 hidden">
+          <!-- Dynamic checklist items -->
+        </ul>
+      </div>
+    </div>  </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 py-6 mt-auto transition-colors duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 dark:text-slate-400 gap-4">
+      <div class="flex items-center space-x-2">
+        <i class="fa-solid fa-circle-nodes text-emerald-500"></i>
+        <span>அக்ரிஹெல்ப் மினி டாஷ்போர்டு / AgriHelp Mini Dashboard v2.5.0</span>
+      </div>
+      <div>
+        <span>உடனடி வேளாண் ஆலோசனைகளை மேம்படுத்த வடிவமைக்கப்பட்டது &copy; 2026. / Designed for real-time agronomic optimization &copy; 2026.</span>
+      </div>
+      <div class="flex space-x-4">
+        <a href="#" class="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">ஆவணங்கள் / Documentation</a>
+        <span>&bull;</span>
+        <a href="#" class="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">API குறியீடு / API Endpoint</a>
+        <span>&bull;</span>
+        <a href="#" class="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">ஆதரவு / Support</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JavaScript Logic -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Splash Screen Loading Simulation
+      const splashScreen = document.getElementById('splash-screen');
+      const splashProgressBar = document.getElementById('splash-progress-bar');
+      const splashPercent = document.getElementById('splash-percent');
+      const splashStatusText = document.getElementById('splash-status-text');
+      const splashLoadingSection = document.getElementById('splash-loading-section');
+      const enterDashBtn = document.getElementById('enter-dash-btn');
+
+      const statusMessages = [
+        "Synchronizing sensors... / வானிலை சென்சார்களுடன் இணைகிறது...",
+        "Connecting soil probes... / மண் பரிசோதனை சாதனங்களுடன் தொடர்பு கொள்கிறது...",
+        "Fetching weather analytics... / உடனடி வானிலை தகவல்களைப் பெறுகிறது...",
+        "Loading South Indian crop cultivar indexes... / தென்னிந்திய பயிர் குறியீடுகளை ஏற்றுகிறது...",
+        "Applying agronomic rules... / பயிர் விதிகள் கணக்கிடப்படுகின்றன...",
+        "Ready to cultivate! / வேளாண் பயன்பாட்டிற்குத் தயார்!"
+      ];
+
+      let progress = 0;
+      let messageIndex = 0;
+
+      const progressInterval = setInterval(() => {
+        progress += Math.floor(Math.random() * 8) + 4;
+        if (progress >= 100) {
+          progress = 100;
+          clearInterval(progressInterval);
+          
+          splashProgressBar.style.width = '100%';
+          splashPercent.textContent = '100%';
+          splashStatusText.textContent = "AgriHelp Mini is fully synchronized.";
+
+          setTimeout(() => {
+            splashLoadingSection.classList.add('hidden');
+            enterDashBtn.classList.remove('hidden');
+            setTimeout(() => {
+              enterDashBtn.classList.remove('opacity-0', 'translate-y-4');
+              enterDashBtn.classList.add('opacity-100', 'translate-y-0');
+            }, 50);
+          }, 300);
+        } else {
+          splashProgressBar.style.width = `${progress}%`;
+          splashPercent.textContent = `${progress}%`;
+
+          const threshold = Math.floor(100 / statusMessages.length);
+          const currentMsgIndex = Math.floor(progress / threshold);
+          if (currentMsgIndex !== messageIndex && currentMsgIndex < statusMessages.length) {
+            messageIndex = currentMsgIndex;
+            splashStatusText.textContent = statusMessages[messageIndex];
+          }
+        }
+      }, 100);
+
+      enterDashBtn.addEventListener('click', () => {
+        splashScreen.classList.add('-translate-y-full', 'opacity-0');
+        setTimeout(() => {
+          splashScreen.classList.add('hidden');
+        }, 800);
+      });
+
+      // Elements
+      const cropSelect = document.getElementById('crop-select');
+      const cropIcon = document.getElementById('crop-icon');
+      const cropBadge = document.getElementById('crop-badge');
+      const stageSelect = document.getElementById('stage-select');
+      const stageBadge = document.getElementById('stage-badge');
+      const tempSlider = document.getElementById('temp-slider');
+      const tempValue = document.getElementById('temp-value');
+      const moistureSlider = document.getElementById('moisture-slider');
+      const moistureValue = document.getElementById('moisture-value');
+      const humiditySlider = document.getElementById('humidity-slider');
+      const humidityValue = document.getElementById('humidity-value');
+      const phSlider = document.getElementById('ph-slider');
+      const phValue = document.getElementById('ph-value');
+      const globalAlertContainer = document.getElementById('global-alert-container');
+      const advisoryFeed = document.getElementById('advisory-feed');
+      const advisoryCount = document.getElementById('advisory-count');
+      
+      // Dynamic profile elements
+      const profileName = document.getElementById('profile-name');
+      const profileDesc = document.getElementById('profile-desc');
+      const profileWater = document.getElementById('profile-water');
+      const profileTemp = document.getElementById('profile-temp');
+
+      // Theme toggle elements
+      const themeToggle = document.getElementById('theme-toggle');
+
+      // Checklist elements
+      const checklistEmpty = document.getElementById('checklist-empty');
+      const checklistItems = document.getElementById('checklist-items');
+      const checklistProgress = document.getElementById('checklist-progress');
+      const simulateBtn = document.getElementById('simulate-btn');
+
+      // Crop metadata profiles
+      const cropProfiles = {
+        Rice: {
+          icon: 'fa-solid fa-wheat-awn text-emerald-600',
+          fullName: 'நெல் / Rice (Oryza sativa)',
+          desc: 'வெப்பமான, ஈரப்பதமான காலநிலை மற்றும் அதிக நீர் தேவைப்படுகிறது. வறட்சியைத் தாங்காது. / Requires a warm, humid climate and consistently high moisture. Sensitive to drought, specifically during vegetative and head growth phases. Soil must be irrigated appropriately.',
+          water: 'அதிகம் (நெல் வயல்) / High (Flooded)',
+          tempRange: '20°C - 35°C'
+        },
+        Cotton: {
+          icon: 'fa-solid fa-certificate text-amber-500',
+          fullName: 'பருத்தி / Cotton (Gossypium)',
+          desc: 'வெப்பமான, வெயில் உள்ள உலர் காலநிலைகளில் நன்கு வளறும். உறைபனி அல்லது அதிக மழையைத் தாங்காது. / Thrives in warm, sunny dry climates. Highly sensitive to extreme frost or excessive precipitation. Temperature surges elevate risk of key insect pests.',
+          water: 'மிதமானது / Medium (Intermittent)',
+          tempRange: '25°C - 35°C'
+        },
+        Sugarcane: {
+          icon: 'fa-solid fa-seedling text-emerald-500',
+          fullName: 'கரும்பு / Sugarcane (Saccharum)',
+          desc: 'அதிக வெப்பநிலை மற்றும் போதுமான நீர் தேவைப்படும் வெப்பமண்டல பயிர். / A tropical, perennial grass requiring high temperatures and plentiful soil moisture. Extreme heat stress halts sucrose production and leads to crop degradation.',
+          water: 'தொடர் நீர் தேவை / High (Continuous)',
+          tempRange: '28°C - 38°C'
+        },
+        Ragi: {
+          icon: 'fa-solid fa-seedling text-amber-600',
+          fullName: 'கேழ்வரகு / Ragi (Finger Millet)',
+          desc: 'வறட்சியைத் தாங்கி வளரக்கூடிய தென்னிந்திய பயிர். சத்துக்கள் நிறைந்தது. / A robust South Indian cereal millet. High drought resistance and exceptional nutrient density. Requires well-drained soils and warm temperature bounds.',
+          water: 'குறைந்த நீர் தேவை / Low (Drought Resistant)',
+          tempRange: '25°C - 35°C'
+        },
+        Coconut: {
+          icon: 'fa-solid fa-tree text-emerald-600',
+          fullName: 'தென்னை / Coconut Palm (Cocos nucifera)',
+          desc: 'தென்னிந்திய கடற்கரை பகுதிகளில் வளரக்கூடிய பயிர். நிலையான வெப்பம் மற்றும் ஈரப்பதம் தேவை. / An iconic tropical palm grown across South Indian coasts. Demands stable heat, continuous soil moisture, and high air humidity. Very sensitive to frost.',
+          water: 'அதிகம் (வட்டப்பாத்தி) / High (Continuous Basin)',
+          tempRange: '27°C - 38°C'
+        },
+        Groundnut: {
+          icon: 'fa-solid fa-circle text-amber-500',
+          fullName: 'நிலக்கடலை / Groundnut (Arachis hypogaea)',
+          desc: 'தென்னிந்தியாவின் முக்கிய எண்ணெய் வித்து பயிர். மணல் கலந்த களிமண் நிலம் இதற்கு உகந்தது. / A primary South Indian oilseed crop. Thrives in sandy-loam soils. Highly sensitive to moisture stress during the critical pod-pegging growth phase.',
+          water: 'மிதமானது / Medium (Intermittent)',
+          tempRange: '25°C - 34°C'
+        }
+      };
+
+      // Rules engine thresholds per Crop & Growth Stage
+      const cropRules = {
+        Rice: {
+          Germination: { temp: [22, 30], moisture: [40, 60], moistureText: 'Moderate (Keep Moist)', waterDesc: 'Keep soil moist but not flooded to allow seedling aeration.' },
+          Vegetative: { temp: [25, 35], moisture: [50, 90], moistureText: 'High (Flooded)', waterDesc: 'Maintain a 5-10cm standing water layer to control weed growth.' },
+          Flowering: { temp: [24, 33], moisture: [60, 90], moistureText: 'High (Continuous Water)', waterDesc: 'Extremely sensitive to drought. Ensure continuous flooding.' },
+          Maturity: { temp: [20, 28], moisture: [20, 40], moistureText: 'Low (Drain Field)', waterDesc: 'Drain the field 10-15 days prior to harvest to promote uniform drying.' }
+        },
+        Cotton: {
+          Germination: { temp: [20, 28], moisture: [30, 50], moistureText: 'Low to Moderate', waterDesc: 'Avoid over-wetting; seedlings are highly susceptible to root rot.' },
+          Vegetative: { temp: [25, 32], moisture: [35, 55], moistureText: 'Moderate', waterDesc: 'Encourage deep rooting by spacing out irrigation intervals.' },
+          Flowering: { temp: [28, 35], moisture: [50, 70], moistureText: 'Optimal (High Demand)', waterDesc: 'Maintain consistent moisture to prevent bolls shedding.' },
+          Maturity: { temp: [22, 30], moisture: [20, 35], moistureText: 'Low (Dry Climate)', waterDesc: 'Reduce water to encourage bolls to open and prevent fiber rot.' }
+        },
+        Sugarcane: {
+          Germination: { temp: [25, 32], moisture: [45, 60], moistureText: 'Moderate', waterDesc: 'Provide light irrigation to stimulate rapid germination of setts.' },
+          Vegetative: { temp: [28, 38], moisture: [60, 85], moistureText: 'High (Frequent Irrigation)', waterDesc: 'Critical elongation phase. Keep soil moisture high for maximum yield.' },
+          Flowering: { temp: [24, 30], moisture: [50, 65], moistureText: 'Moderate', waterDesc: 'Reduce moisture slightly to check excessive vegetative growth.' },
+          Maturity: { temp: [18, 26], moisture: [25, 40], moistureText: 'Low (Ripening)', waterDesc: 'Impose water stress 3-4 weeks prior to harvest to maximize sugar accumulation.' }
+        },
+        Ragi: {
+          Germination: { temp: [22, 32], moisture: [20, 45], moistureText: 'Low to Moderate', waterDesc: 'Keep soil lightly damp. Excessive moisture causes seed rot.' },
+          Vegetative: { temp: [24, 35], moisture: [20, 50], moistureText: 'Moderate', waterDesc: 'Ragi requires minimal watering. Avoid ponding.' },
+          Flowering: { temp: [24, 34], moisture: [30, 55], moistureText: 'Moderate', waterDesc: 'Moderate water required for heading. Soil must not dry out completely.' },
+          Maturity: { temp: [20, 30], moisture: [15, 30], moistureText: 'Low', waterDesc: 'Stop watering 2 weeks prior to harvest to ease grain drying.' }
+        },
+        Coconut: {
+          Germination: { temp: [25, 35], moisture: [40, 60], moistureText: 'Moderate', waterDesc: 'Keep the seedbeds moist but prevent standing water.' },
+          Vegetative: { temp: [26, 38], moisture: [50, 80], moistureText: 'High (Frequent)', waterDesc: 'Water young palms frequently to establish extensive root zones.' },
+          Flowering: { temp: [27, 38], moisture: [50, 85], moistureText: 'High (Basin Flooding)', waterDesc: 'Nut-setting phase requires constant moisture in the basin ring.' },
+          Maturity: { temp: [24, 35], moisture: [40, 70], moistureText: 'Moderate to High', waterDesc: 'Maintain regular watering to prevent immature nut drop.' }
+        },
+        Groundnut: {
+          Germination: { temp: [22, 30], moisture: [25, 45], moistureText: 'Low to Moderate', waterDesc: 'Ensure soil is moist but loose for sprout emergence.' },
+          Vegetative: { temp: [24, 34], moisture: [30, 50], moistureText: 'Moderate', waterDesc: 'Apply minimal watering to encourage strong taproot growth.' },
+          Flowering: { temp: [25, 34], moisture: [45, 65], moistureText: 'High (Pegging Stage)', waterDesc: 'Pegging phase is highly sensitive to dry soil. Ensure moisture is adequate.' },
+          Maturity: { temp: [22, 32], moisture: [20, 35], moistureText: 'Low', waterDesc: 'Let soil dry slightly to facilitate pod lifting and prevent seed sprouting in pod.' }
+        }
+      };
+
+      // Set the header clock dynamically based on user context
+      function updateClock() {
+        try {
+          const now = new Date();
+          const options = { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true };
+          document.getElementById('live-time').textContent = now.toLocaleDateString('en-US', options);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      setInterval(updateClock, 1000);
+      updateClock();
+
+      // Theme toggle handlers
+      const savedTheme = localStorage.getItem('theme');
+      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+
+      themeToggle.addEventListener('click', () => {
+        const isDark = document.documentElement.classList.toggle('dark');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        if (trendChart) {
+          updateChartColors();
+        }
+      });
+
+      // Local Checklist Storage
+      let checklistTasks = JSON.parse(localStorage.getItem('agrihelp_checklist')) || [];
+
+      window.addToChecklist = function(id, title, recommendation) {
+        if (checklistTasks.some(t => t.id === id)) {
+          return; // Already exists
+        }
+        checklistTasks.push({ id, title, recommendation, completed: false });
+        saveAndRenderChecklist();
+      };
+
+      window.toggleTask = function(id) {
+        checklistTasks = checklistTasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
+        saveAndRenderChecklist();
+      };
+
+      window.removeTask = function(id) {
+        checklistTasks = checklistTasks.filter(t => t.id !== id);
+        saveAndRenderChecklist();
+      };
+
+      function saveAndRenderChecklist() {
+        localStorage.setItem('agrihelp_checklist', JSON.stringify(checklistTasks));
+        if (checklistTasks.length === 0) {
+          checklistEmpty.classList.remove('hidden');
+          checklistItems.classList.add('hidden');
+          checklistProgress.textContent = "0 / 0 Done";
+        } else {
+          checklistEmpty.classList.add('hidden');
+          checklistItems.classList.remove('hidden');
+          
+          const completedCount = checklistTasks.filter(t => t.completed).length;
+          checklistProgress.textContent = `${completedCount} / ${checklistTasks.length} Done`;
+
+          checklistItems.innerHTML = '';
+          checklistTasks.forEach(task => {
+            const li = document.createElement('li');
+            li.className = `flex items-start justify-between p-3 rounded-xl border border-slate-100 dark:border-slate-805 bg-slate-50/50 dark:bg-slate-900/50 gap-3 group transition-all`;
+            li.innerHTML = `
+              <div class="flex items-start gap-2.5">
+                <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask('${task.id}')" class="mt-1 h-4 w-4 rounded border-slate-350 dark:border-slate-700 text-emerald-600 focus:ring-emerald-500/20 cursor-pointer">
+                <div>
+                  <span class="text-xs font-bold text-slate-800 dark:text-slate-200 ${task.completed ? 'line-through opacity-50' : ''}">${task.title}</span>
+                  <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">${task.recommendation}</p>
+                </div>
+              </div>
+              <button onclick="removeTask('${task.id}')" class="text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" title="Delete Task">
+                <i class="fa-solid fa-trash-can text-xs"></i>
+              </button>
+            `;
+            checklistItems.appendChild(li);
+          });
+        }
+      }
+
+      // Chart.js implementation
+      let trendChart = null;
+
+      function updateChart(temp, moisture) {
+        const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        
+        // Generate pseudo-random realistic trend data centering around slider values
+        const tempData = [];
+        const moistureData = [];
+        
+        for (let i = 0; i < 7; i++) {
+          const tempOffset = Math.sin(i * 1.2) * 2.5 + (Math.random() - 0.5) * 1.2;
+          const moistureOffset = Math.cos(i * 1.0) * 6 + (Math.random() - 0.5) * 3;
+          
+          tempData.push(Math.min(45, Math.max(15, parseFloat((temp + tempOffset).toFixed(1)))));
+          moistureData.push(Math.min(100, Math.max(0, Math.round(moisture + moistureOffset))));
+        }
+
+        const ctx = document.getElementById('trend-chart').getContext('2d');
+        const isDark = document.documentElement.classList.contains('dark');
+        
+        const gridColor = isDark ? 'rgba(148, 163, 184, 0.08)' : 'rgba(226, 232, 240, 0.8)';
+        const textColor = isDark ? '#94a3b8' : '#64748b';
+
+        if (trendChart) {
+          trendChart.data.datasets[0].data = tempData;
+          trendChart.data.datasets[1].data = moistureData;
+          trendChart.update();
+        } else {
+          trendChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: labels,
+              datasets: [
+                {
+                  label: 'Temp (°C)',
+                  data: tempData,
+                  borderColor: '#f97316', // orange-500
+                  backgroundColor: 'rgba(249, 115, 22, 0.04)',
+                  borderWidth: 2.5,
+                  tension: 0.35,
+                  yAxisID: 'y',
+                  fill: true,
+                },
+                {
+                  label: 'Moisture (%)',
+                  data: moistureData,
+                  borderColor: '#3b82f6', // blue-500
+                  backgroundColor: 'rgba(59, 130, 246, 0.04)',
+                  borderWidth: 2.5,
+                  tension: 0.35,
+                  yAxisID: 'y1',
+                  fill: true,
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  position: 'top',
+                  labels: {
+                    boxWidth: 10,
+                    font: { family: 'Inter', size: 11, weight: '600' },
+                    color: textColor
+                  }
+                },
+                tooltip: {
+                  mode: 'index',
+                  intersect: false,
+                  backgroundColor: isDark ? '#1e293b' : '#0f172a',
+                  titleFont: { family: 'Inter', size: 11, weight: 'bold' },
+                  bodyFont: { family: 'Inter', size: 11 },
+                  padding: 8,
+                  cornerRadius: 6,
+                }
+              },
+              scales: {
+                x: {
+                  grid: { color: gridColor },
+                  ticks: { font: { family: 'Inter', size: 10 }, color: textColor }
+                },
+                y: {
+                  type: 'linear',
+                  display: true,
+                  position: 'left',
+                  min: 10,
+                  max: 50,
+                  grid: { color: gridColor },
+                  ticks: {
+                    font: { family: 'Inter', size: 10 },
+                    color: textColor,
+                    callback: function(value) { return value + '°C'; }
+                  },
+                  title: {
+                    display: true,
+                    text: 'Temp (°C)',
+                    font: { family: 'Inter', size: 9, weight: 'bold' },
+                    color: '#f97316'
+                  }
+                },
+                y1: {
+                  type: 'linear',
+                  display: true,
+                  position: 'right',
+                  min: 0,
+                  max: 100,
+                  grid: { drawOnChartArea: false },
+                  ticks: {
+                    font: { family: 'Inter', size: 10 },
+                    color: textColor,
+                    callback: function(value) { return value + '%'; }
+                  },
+                  title: {
+                    display: true,
+                    text: 'Moisture (%)',
+                    font: { family: 'Inter', size: 9, weight: 'bold' },
+                    color: '#3b82f6'
+                  }
+                }
+              }
+            }
+          });
+        }
+      }
+
+      function updateChartColors() {
+        const isDark = document.documentElement.classList.contains('dark');
+        const gridColor = isDark ? 'rgba(148, 163, 184, 0.08)' : 'rgba(226, 232, 240, 0.8)';
+        const textColor = isDark ? '#94a3b8' : '#64748b';
+
+        if (trendChart) {
+          trendChart.options.scales.x.grid.color = gridColor;
+          trendChart.options.scales.x.ticks.color = textColor;
+          trendChart.options.scales.y.grid.color = gridColor;
+          trendChart.options.scales.y.ticks.color = textColor;
+          trendChart.options.scales.y1.grid.color = gridColor;
+          trendChart.options.scales.y1.ticks.color = textColor;
+          trendChart.options.plugins.legend.labels.color = textColor;
+          trendChart.update();
+        }
+      }
+
+      // Main advisory evaluator (Rules Engine)
+      function updateDashboard() {
+        const crop = cropSelect.value;
+        const stage = stageSelect.value;
+        const temp = parseInt(tempSlider.value);
+        const moisture = parseInt(moistureSlider.value);
+        const humidity = parseInt(humiditySlider.value);
+        const ph = parseFloat(phSlider.value);
+
+        // Update Slider Text Values
+        tempValue.textContent = `${temp}°C`;
+        moistureValue.textContent = `${moisture}%`;
+        humidityValue.textContent = `${humidity}%`;
+        phValue.textContent = `${ph.toFixed(1)}`;
+
+        // Update Left Profile Card
+        const profile = cropProfiles[crop];
+        cropIcon.className = `${profile.icon} text-lg`;
+        const cropTranslations = {
+          Rice: 'நெல் / Rice',
+          Cotton: 'பருத்தி / Cotton',
+          Sugarcane: 'கரும்பு / Sugarcane',
+          Ragi: 'கேழ்வரகு / Ragi',
+          Coconut: 'தென்னை / Coconut',
+          Groundnut: 'நிலக்கடலை / Groundnut'
+        };
+        cropBadge.textContent = cropTranslations[crop] || crop;
+        profileName.textContent = profile.fullName;
+        profileDesc.textContent = profile.desc;
+        profileWater.textContent = profile.water;
+        profileTemp.textContent = profile.tempRange;
+
+        // Update Stage Badge text
+        stageBadge.textContent = stageSelect.options[stageSelect.selectedIndex].text;
+
+        // Reset and check Global Rules: If Temp > 42°C for any crop
+        if (temp > 42) {
+          globalAlertContainer.classList.remove('hidden', 'scale-95', 'opacity-0');
+          globalAlertContainer.classList.add('scale-100', 'opacity-100');
+        } else {
+          globalAlertContainer.classList.add('hidden', 'scale-95', 'opacity-0');
+          globalAlertContainer.classList.remove('scale-100', 'opacity-100');
+        }
+
+        // Evaluate Crop & Stage Specific advisories
+        let advisories = [];
+        let soilAdvisories = [];
+        const rules = cropRules[crop][stage];
+
+        // 1. Check temperature bounds
+        if (temp < rules.temp[0]) {
+          advisories.push({
+            level: 'warning',
+            title: 'Low Temp Retardation / குறைந்த வெப்பநிலை பாதிப்பு',
+            msg: `Current temp ${temp}°C is below optimal range of ${rules.temp[0]}-${rules.temp[1]}°C for ${stage} stage. Growth may delay. / தற்போதைய வெப்பநிலை ${temp}°C ஆனது, ${stage} நிலைக்குத் தேவையான ${rules.temp[0]}-${rules.temp[1]}°C வரம்பை விடக் குறைவாக உள்ளது. பயிர் வளர்ச்சி தாமதமடையலாம்.`,
+            icon: 'fa-solid fa-snowflake',
+            recommendation: 'Limit morning irrigation and delay nitrogen application. / அதிகாலையில் நீர்ப்பாசனம் செய்வதைக் குறைக்கவும், வெப்பநிலை அதிகரிக்கும் வரை நைட்ரஜன் உரங்களைத் தவிர்க்கவும்.'
+          });
+        } else if (temp > rules.temp[1]) {
+          advisories.push({
+            level: 'critical',
+            title: 'High Heat Crop Stress / அதிக வெப்பப் பயிர் அழுத்தம்',
+            msg: `Extreme temp ${temp}°C exceeds tolerance limit (${rules.temp[1]}°C). This can trigger blossom drop or sugar degradation. / அதிகப்படியான வெப்பநிலை ${temp}°C ஆனது பயிரின் வரம்பை (${rules.temp[1]}°C) தாண்டுகிறது. இதனால் பூக்கள் கொட்டலாம் அல்லது சர்க்கரைச் சத்து குறையலாம்.`,
+            icon: 'fa-solid fa-fire',
+            recommendation: 'Deploy shading netting or mid-day sprinkler cooling. / நிழல் வலைகளை அமைக்கவும் அல்லது மதிய வேளையில் தெளிப்பு நீர்ப்பாசனம் மூலம் குளிர்விக்கவும்.'
+          });
+        }
+
+        // 2. Check soil moisture bounds
+        if (moisture < rules.moisture[0]) {
+          advisories.push({
+            level: 'critical',
+            title: 'Critical Soil Drought / கடுமையான மண் வறட்சி',
+            msg: `Soil moisture ${moisture}% is critically below minimum limits of ${rules.moisture[0]}%. / மண்ணின் ஈரப்பதம் ${moisture}% ஆக உள்ளது. இது பயிரின் குறைந்தபட்ச தேவையாகிய ${rules.moisture[0]}% ஐ விடக் குறைவு.`,
+            icon: 'fa-solid fa-faucet-drip',
+            recommendation: 'Irrigate immediately. Ensure canals are clear. / உடனடியாக நீர்ப்பாசனம் செய்யவும். வாய்க்கால்கள் அடைப்பின்றி இருப்பதை உறுதி செய்யவும்.'
+          });
+        } else if (moisture > rules.moisture[1]) {
+          advisories.push({
+            level: 'warning',
+            title: 'Waterlogging Warning / மண்ணில் தேங்கி நிற்கும் நீர் எச்சரிக்கை',
+            msg: `Excessive moisture ${moisture}% may cause root suffocation and root rot. / அதிகப்படியான நீர் ஈரப்பதம் ${moisture}% கண்டறியப்பட்டுள்ளது. இது வேர்களுக்கு ஆக்சிஜன் கிடைப்பதைத் தடுத்து வேர் அழுகலுக்கு வழிவகுக்கும்.`,
+            icon: 'fa-solid fa-droplet-slash',
+            recommendation: 'Drain excess water and clear discharge channels. / தேங்கிய நீரை உடனடியாக வடிகட்டவும், வாய்க்கால்களைச் சுத்தம் செய்யவும்.'
+          });
+        }
+
+        // 3. Soil pH checks
+        const idealPH = { Rice: [5.5, 6.5], Cotton: [5.8, 8.0], Sugarcane: [6.0, 7.5], Ragi: [5.0, 8.2], Coconut: [5.2, 8.0], Groundnut: [6.0, 7.5] }[crop];
+        if (ph < idealPH[0]) {
+          advisories.push({
+            level: 'critical',
+            title: 'Soil Acidification Alert / மண் அமிலத்தன்மை எச்சரிக்கை',
+            msg: `Soil pH (${ph}) is highly acidic. Nutrient uptake of N and P is blocked. / மண் pH அளவு (${ph}) மிகவும் அமிலத்தன்மையுடன் உள்ளது. இதனால் பயிர்களால் நைட்ரஜன் மற்றும் பாஸ்பரஸை உறிஞ்ச முடியாது.`,
+            icon: 'fa-solid fa-vial-virus',
+            recommendation: 'Apply agricultural lime or dolomite to raise pH. / மண்ணின் அமிலத்தன்மையைக் குறைக்க விவசாய சுண்ணாம்பு (ஜிப்சம்/டோலமைட்) பயன்படுத்தவும்.'
+          });
+        } else if (ph > idealPH[1]) {
+          advisories.push({
+            level: 'critical',
+            title: 'Soil Alkalinity Warning / மண் காரத்தன்மை எச்சரிக்கை',
+            msg: `Soil pH (${ph}) is alkaline, blocking availability of iron and zinc. / காரத்தன்மை கொண்ட மண் கண்டறியப்பட்டுள்ளது (pH ${ph}). இது இரும்பு, துத்தநாகம் போன்ற சத்துக்கள் உறிஞ்சப்படுவதைத் தடுக்கும்.`,
+            icon: 'fa-solid fa-vial-circle-check',
+            recommendation: 'Apply elemental sulfur or acidic compost. / மண்ணில் எலிமெண்டல் சல்பர் அல்லது அமிலத் தன்மை கொண்ட உரம் பயன்படுத்தவும்.'
+          });
+        }
+
+        // 3. Soil Report Parser metrics checks (if document loaded)
+        if (parsedSoilData) {
+          const pPH = parsedSoilData.ph;
+          const pN = parsedSoilData.n;
+          const pP = parsedSoilData.p;
+          const pK = parsedSoilData.k;
+
+          if (pPH !== undefined) {
+            if (pPH < 5.5) {
+              soilAdvisories.push({
+                level: 'critical',
+                title: 'Soil Report: High Acidity / மண் அறிக்கை: அதிக அமிலத்தன்மை',
+                msg: `Soil test report shows highly acidic soil (pH ${pPH.toFixed(1)}). Phosphorus intake is blocked. / மண் பரிசோதனை அறிக்கை அதிக அமிலத்தன்மையைக் காட்டுகிறது (pH ${pPH.toFixed(1)}). இது பாஸ்பரஸ் சத்தை உறிஞ்சத் தடையை ஏற்படுத்தும்.`,
+                icon: 'fa-solid fa-vial-virus',
+                recommendation: 'Incorporate agricultural lime or dolomite to raise pH. / அமிலத்தன்மையைக் குறைக்க விவசாயச் சுண்ணாம்பு அல்லது டோலமைட்டை மண்ணில் கலக்கவும்.'
+              });
+            } else if (pPH > 7.8) {
+              soilAdvisories.push({
+                level: 'critical',
+                title: 'Soil Report: High Alkalinity / மண் அறிக்கை: அதிக காரத்தன்மை',
+                msg: `Soil test report shows alkaline soil (pH ${pPH.toFixed(1)}). Iron and zinc intake are blocked. / மண் பரிசோதனை அறிக்கை அதிக காரத்தன்மையைக் காட்டுகிறது (pH ${pPH.toFixed(1)}). இது இரும்பு, துத்தநாகச் சத்துக்களைத் தடுக்கும்.`,
+                icon: 'fa-solid fa-vial-circle-check',
+                recommendation: 'Incorporate elemental sulfur or gypsum to lower pH. / காரத்தன்மையைக் குறைக்க எலிமெண்டல் சல்பர் அல்லது ஜிப்சத்தை மண்ணில் சேர்க்கவும்.'
+              });
+            } else {
+              soilAdvisories.push({
+                level: 'optimal',
+                title: 'Soil Report: Optimal pH / மண் அறிக்கை: சரியான pH',
+                msg: `Soil test report shows optimal soil pH of ${pPH.toFixed(1)}. / மண் பரிசோதனை அறிக்கை சரியான pH அளவாகிய ${pPH.toFixed(1)} ஐக் காட்டுகிறது.`,
+                icon: 'fa-solid fa-vial-circle-check',
+                recommendation: 'No amendment required to stabilize pH. / pH அளவை நிலைநிறுத்த கூடுதல் திருத்தங்கள் தேவையில்லை.'
+              });
+            }
+          }
+
+          if (pN !== undefined) {
+            if (pN === 'low' || pN === 'Low' || (typeof pN === 'number' && pN < 280)) {
+              soilAdvisories.push({
+                level: 'critical',
+                title: 'Soil Report: Nitrogen Deficient / மண் அறிக்கை: நைட்ரஜன் பற்றாக்குறை',
+                msg: `Soil report indicates Low Nitrogen levels (essential for canopy development). / மண் அறிக்கை குறைந்த நைட்ரஜன் (N) அளவைக் காட்டுகிறது. இலைகளின் வளர்ச்சிக்கு நைட்ரஜன் மிகவும் அவசியம்.`,
+                icon: 'fa-solid fa-leaf',
+                recommendation: 'Apply urea, or plant leguminous South Indian cover crops. / யூரியா போன்ற நைட்ரஜன் உரங்களை இடவும், அல்லது நிலக்கடலை போன்ற பயிர்களை ஊடுபயிராக நடவும்.'
+              });
+            }
+          }
+
+          if (pP !== undefined) {
+            if (pP === 'low' || pP === 'Low' || (typeof pP === 'number' && pP < 22)) {
+              soilAdvisories.push({
+                level: 'warning',
+                title: 'Soil Report: Phosphorus Deficient / மண் அறிக்கை: பாஸ்பரஸ் பற்றாக்குறை',
+                msg: `Soil report indicates Low Phosphorus levels (essential for root structure). / மண் அறிக்கை குறைந்த பாஸ்பரஸ் (P) அளவைக் காட்டுகிறது. வேர் வளர்ச்சிக்கு பாஸ்பரஸ் முக்கியம்.`,
+                icon: 'fa-solid fa-arrows-up-to-line',
+                recommendation: 'Apply SSP or DAP during early growth stages. / வளர்ச்சியின் ஆரம்ப கட்டங்களில் SSP அல்லது DAP உரங்களைப் பயன்படுத்தவும்.'
+              });
+            }
+          }
+
+          if (pK !== undefined) {
+            if (pK === 'low' || pK === 'Low' || (typeof pK === 'number' && pK < 110)) {
+              soilAdvisories.push({
+                level: 'warning',
+                title: 'Soil Report: Potassium Deficient / மண் அறிக்கை: பொட்டாசியம் பற்றாக்குறை',
+                msg: `Soil report indicates Low Potassium levels (essential for immunity and stem strength). / மண் அறிக்கை குறைந்த பொட்டாசியம் (K) அளவைக் காட்டுகிறது. இது நோய் எதிர்ப்புச் சக்திக்கும் தண்டு வளர்ச்சிக்கும் முக்கியம்.`,
+                icon: 'fa-solid fa-shield-halved',
+                recommendation: 'Apply MOP during active cycles. / பொட்டாசியம் பற்றாக்குறையைப் போக்க முரியேட் ஆஃப் பொட்டாஷ் (MOP) பயன்படுத்தவும்.'
+              });
+            }
+          }
+
+          if (soilAdvisories.length === 0) {
+            soilAdvisories.push({
+              level: 'optimal',
+              title: 'Soil Diagnostics Optimal / மண் பரிசோதனை: உகந்தது',
+              msg: 'All soil report metrics (pH, Nitrogen, Phosphorus, Potassium) align perfectly. / மண்ணின் அனைத்து சத்துக்களும் (pH, நைட்ரஜன், பாஸ்பரஸ், பொட்டாசியம்) சரியான அளவில் உள்ளன.',
+              icon: 'fa-solid fa-circle-check',
+              recommendation: 'No corrective actions needed. Maintain organic rotations. / கூடுதல் திருத்தங்கள் தேவையில்லை. இயற்கை உர சுழற்சியைப் பராமரிக்கவும்.'
+            });
+          }
+        } else {
+          soilAdvisories.push({
+            level: 'optimal',
+            title: 'No Soil Report Active / மண் அறிக்கை ஏதுமில்லை',
+            msg: 'Upload a soil report or click a sandbox sample to begin diagnostics. / பரிசோதனை செய்ய மண் பரிசோதனை அறிக்கையை பதிவேற்றவும் அல்லது மாதிரி அறிக்கையைப் பயன்படுத்தவும்.',
+            icon: 'fa-solid fa-file-invoice',
+            recommendation: 'Once uploaded, fertilizer recommendations will calculate here. / பதிவேற்றியதும், பரிந்துரைக்கப்படும் உர அளவுகள் இங்கு காண்பிக்கப்படும்.'
+          });
+        }
+
+        // 4. Air Humidity checks (disease risk & VPD)
+        if (humidity > 85 && temp > 28) {
+          advisories.push({
+            level: 'critical',
+            title: 'Fungal Disease Risk / பூஞ்சை நோய் தாக்குதல் ஆபத்து',
+            msg: `High humidity (${humidity}%) and warmth (${temp}°C) increase fungal propagation risk. / அதிகப்படியான ஈரப்பதமும் (${humidity}%) வெப்பமும் (${temp}°C) பூஞ்சை நோய்கள் பரவ உகந்த சூழலாகும்.`,
+            icon: 'fa-solid fa-bug-slash',
+            recommendation: 'Apply fungicide and prune lower foliage. / வேப்ப எண்ணெய் அல்லது பூஞ்சைக் கொல்லிகளைத் தெளிக்கவும், காற்றோட்டத்தை அதிகரிக்க இலைகளைக் கத்தரிக்கவும்.'
+          });
+        } else if (humidity < 30 && temp > 35) {
+          advisories.push({
+            level: 'warning',
+            title: 'VPD Stress / வறண்ட காற்று பயிர் அழுத்தம்',
+            msg: `Dry air (${humidity}%) paired with high heat (${temp}°C) triggers excessive transpiration. / வறண்ட காற்றும் (${humidity}%) அதிக வெப்பமும் (${temp}°C) பயிரிலிருந்து நீர் வேகமாக ஆவியாகக் காரணமாகிறது.`,
+            icon: 'fa-solid fa-wind',
+            recommendation: 'Mulch to retain moisture. Water during evening. / மண் ஈரப்பத்தைப் பற்றிப் பாதுகாக்க உலர் இலைகளைக் கொண்டு மூடாக்கு அமைக்கவும், மாலையில் நீர் பாய்ச்சவும்.'
+          });
+        }
+
+        // 5. Pest Risk alerts (specific to Cotton heat bounds)
+        if (crop === 'Cotton' && temp > 35 && humidity > 60) {
+          advisories.push({
+            level: 'critical',
+            title: 'Whitefly Outbreak Risk / வெள்ளை ஈ தாக்குதல் ஆபத்து',
+            msg: 'High temperature and humidity promote rapid whitefly reproduction. / அதிக வெப்பமும் ஈரப்பதமும் வெள்ளை ஈக்கள் வேகமாக இனப்பெருக்கம் செய்ய காரணமாகின்றன.',
+            icon: 'fa-solid fa-bug',
+            recommendation: 'Set yellow sticky traps, inspect lower canopy, and apply biopesticides. / மஞ்சள் ஒட்டும் பொறிகளை அமைக்கவும், பயிர் இலைகளின் அடிப்பகுதியை ஆய்வு செய்து பூச்சிக்கொல்லி தெளிக்கவும்.'
+          });
+        }
+
+        // If no warning or critical actions exist
+        if (advisories.filter(a => a.level !== 'optimal').length === 0) {
+          advisories.push({
+            level: 'optimal',
+            title: 'Growth Conditions Ideal / வளர்ச்சி நிலை உகந்தது',
+            msg: `All core metrics (Temp: ${temp}°C, Moisture: ${moisture}%, pH: ${ph}, Humidity: ${humidity}%) are optimal for ${crop} at ${stage} stage. / அனைத்து காரணிகளும் (வெப்பநிலை: ${temp}°C, ஈரப்பதம்: ${moisture}%, pH: ${ph}, காற்று ஈரப்பதம்: ${humidity}%) ${crop} பயிரின் ${stage} நிலைக்குச் சரியாக உள்ளன.`,
+            icon: 'fa-solid fa-circle-check',
+            recommendation: 'No corrective actions are needed. Maintain current irrigation pattern. / கூடுதல் நடவடிக்கைகள் தேவையில்லை. வழக்கமான நீர் மேலாண்மையைப் பின்பற்றவும்.'
+          });
+        }
+
+        renderAdvisories(advisories);
+        renderSoilAdvisories(soilAdvisories);
+        updateChart(temp, moisture);
+      }
+
+      // Render advisory cards to DOM
+      function renderAdvisories(advisories) {
+        advisoryFeed.innerHTML = '';
+        advisoryCount.textContent = `${advisories.length} Advisory${advisories.length !== 1 ? 's' : ''}`;
+
+        advisories.forEach((adv, index) => {
+          const card = document.createElement('div');
+          card.className = `advisory-transition border p-5 rounded-2xl shadow-sm bg-white dark:bg-slate-900 flex flex-col md:flex-row items-start gap-4 hover:shadow-md transition-all duration-300 transform translate-y-2 opacity-0`;
+          
+          let alertStyles = '';
+          let badgeStyles = '';
+          let badgeText = '';
+
+          switch (adv.level) {
+            case 'critical':
+              alertStyles = 'border-red-100 dark:border-red-950/40 bg-red-50/50 dark:bg-red-950/10 hover:border-red-200';
+              badgeStyles = 'bg-red-100 dark:bg-red-900/60 text-red-800 dark:text-red-200 border-red-200 dark:border-red-900/30';
+              badgeText = 'Critical Action';
+              break;
+            case 'warning':
+              alertStyles = 'border-amber-100 dark:border-amber-950/40 bg-amber-50/50 dark:bg-amber-950/10 hover:border-amber-200';
+              badgeStyles = 'bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200 border-amber-200 dark:border-amber-900/30';
+              badgeText = 'Warning';
+              break;
+            case 'optimal':
+              alertStyles = 'border-emerald-100 dark:border-emerald-950/40 bg-emerald-50/50 dark:bg-emerald-950/10 hover:border-emerald-200';
+              badgeStyles = 'bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 border-emerald-200 dark:border-emerald-900/30';
+              badgeText = 'Optimal';
+              break;
+          }
+
+          card.classList.add(...alertStyles.split(' '));
+
+          // Generate unique task ID
+          const taskId = adv.title.toLowerCase().replace(/[^a-z0-9]/g, '-');
+
+          card.innerHTML = `
+            <div class="flex-shrink-0 h-10 w-10 rounded-xl flex items-center justify-center ${
+              adv.level === 'critical' ? 'bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400' : 
+              adv.level === 'warning' ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400' : 
+              'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400'
+            }">
+              <i class="${adv.icon} text-lg"></i>
+            </div>
+            <div class="flex-grow w-full">
+              <div class="flex items-center justify-between flex-wrap gap-2">
+                <div class="flex items-center gap-2">
+                  <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100">${adv.title}</h3>
+                  <span class="inline-flex items-center rounded border px-1.5 py-0.2 text-[9px] font-bold uppercase tracking-wider ${badgeStyles}">
+                    ${badgeText}
+                  </span>
+                </div>
+                ${adv.level !== 'optimal' ? `
+                  <button onclick="addToChecklist('${taskId}', '${adv.title}', '${adv.recommendation.replace(/'/g, "\\'")}')" class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/40 px-2 py-1 rounded-lg transition-colors">
+                    <i class="fa-solid fa-plus"></i> Add Checklist
+                  </button>
+                ` : ''}
+              </div>
+              <p class="text-xs text-slate-600 dark:text-slate-350 mt-1 leading-relaxed">${adv.msg}</p>
+              <div class="mt-3 flex items-start gap-1.5 text-xs text-slate-500 dark:text-slate-400 bg-white/60 dark:bg-slate-950/40 p-2 rounded-lg border border-slate-100/50 dark:border-slate-800/50">
+                <i class="fa-solid fa-circle-info text-emerald-600 dark:text-emerald-400 mt-0.5"></i>
+                <span><strong>Recommendation:</strong> ${adv.recommendation}</span>
+              </div>
+            </div>
+          `;
+
+          advisoryFeed.appendChild(card);
+
+          // Stagger card animation entrance
+          setTimeout(() => {
+            card.classList.remove('translate-y-2', 'opacity-0');
+            card.classList.add('translate-y-0', 'opacity-100');
+          }, index * 80);
+        });
+      }
+
+      // Render soil advisory cards to DOM
+      function renderSoilAdvisories(soilAdvisories) {
+        const soilAdvisoryFeed = document.getElementById('soil-advisory-feed');
+        const soilAdvisoryCount = document.getElementById('soil-advisory-count');
+        if (!soilAdvisoryFeed) return;
+
+        soilAdvisoryFeed.innerHTML = '';
+        soilAdvisoryCount.textContent = `${soilAdvisories.length} Advisory${soilAdvisories.length !== 1 ? 's' : ''}`;
+
+        soilAdvisories.forEach((adv, index) => {
+          const card = document.createElement('div');
+          card.className = `advisory-transition border p-5 rounded-2xl shadow-sm bg-white dark:bg-slate-900 flex flex-col md:flex-row items-start gap-4 hover:shadow-md transition-all duration-300 transform translate-y-2 opacity-0`;
+          
+          let alertStyles = '';
+          let badgeStyles = '';
+          let badgeText = '';
+
+          switch (adv.level) {
+            case 'critical':
+              alertStyles = 'border-red-100 dark:border-red-950/40 bg-red-50/50 dark:bg-red-950/10 hover:border-red-200';
+              badgeStyles = 'bg-red-100 dark:bg-red-900/60 text-red-800 dark:text-red-200 border-red-200 dark:border-red-900/30';
+              badgeText = 'Critical Action';
+              break;
+            case 'warning':
+              alertStyles = 'border-amber-100 dark:border-amber-950/40 bg-amber-50/50 dark:bg-amber-950/10 hover:border-amber-200';
+              badgeStyles = 'bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200 border-amber-200 dark:border-amber-900/30';
+              badgeText = 'Warning';
+              break;
+            case 'optimal':
+              alertStyles = 'border-emerald-100 dark:border-emerald-950/40 bg-emerald-50/50 dark:bg-emerald-950/10 hover:border-emerald-200';
+              badgeStyles = 'bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 border-emerald-200 dark:border-emerald-900/30';
+              badgeText = 'Optimal';
+              break;
+          }
+
+          card.classList.add(...alertStyles.split(' '));
+
+          // Generate unique task ID
+          const taskId = adv.title.toLowerCase().replace(/[^a-z0-9]/g, '-');
+
+          card.innerHTML = `
+            <div class="flex-shrink-0 h-10 w-10 rounded-xl flex items-center justify-center ${
+              adv.level === 'critical' ? 'bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400' : 
+              adv.level === 'warning' ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400' : 
+              'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400'
+            }">
+              <i class="${adv.icon} text-lg"></i>
+            </div>
+            <div class="flex-grow w-full">
+              <div class="flex items-center justify-between flex-wrap gap-2">
+                <div class="flex items-center gap-2">
+                  <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100">${adv.title}</h3>
+                  <span class="inline-flex items-center rounded border px-1.5 py-0.2 text-[9px] font-bold uppercase tracking-wider ${badgeStyles}">
+                    ${badgeText}
+                  </span>
+                </div>
+                ${(adv.level !== 'optimal' && adv.title !== 'No Soil Report Active') ? `
+                  <button onclick="addToChecklist('${taskId}', '${adv.title}', '${adv.recommendation.replace(/'/g, "\\'")}')" class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/40 px-2 py-1 rounded-lg transition-colors">
+                    <i class="fa-solid fa-plus"></i> Add Checklist
+                  </button>
+                ` : ''}
+              </div>
+              <p class="text-xs text-slate-600 dark:text-slate-350 mt-1 leading-relaxed">${adv.msg}</p>
+              ${adv.recommendation ? `
+                <div class="mt-3 flex items-start gap-1.5 text-xs text-slate-500 dark:text-slate-400 bg-white/60 dark:bg-slate-950/40 p-2 rounded-lg border border-slate-100/50 dark:border-slate-800/50">
+                  <i class="fa-solid fa-circle-info text-emerald-600 dark:text-emerald-400 mt-0.5"></i>
+                  <span><strong>Recommendation:</strong> ${adv.recommendation}</span>
+                </div>
+              ` : ''}
+            </div>
+          `;
+
+          soilAdvisoryFeed.appendChild(card);
+
+          // Stagger card animation entrance
+          setTimeout(() => {
+            card.classList.remove('translate-y-2', 'opacity-0');
+            card.classList.add('translate-y-0', 'opacity-100');
+          }, index * 80);
+        });
+      }
+
+      // Soil Report Uploader Globals
+      let parsedSoilData = null;
+
+      // Elements for uploader and primary tabs
+      const navAdvisories = document.getElementById('nav-advisories');
+      const navAnalytics = document.getElementById('nav-analytics');
+      const navSoil = document.getElementById('nav-soil');
+      const navTasks = document.getElementById('nav-tasks');
+
+      const paneAdvisories = document.getElementById('pane-advisories');
+      const paneAnalytics = document.getElementById('pane-analytics');
+      const paneSoil = document.getElementById('pane-soil');
+      const paneTasks = document.getElementById('pane-tasks');
+      const dropZone = document.getElementById('drop-zone');
+      const fileInput = document.getElementById('file-input');
+      const browseBtn = document.getElementById('browse-btn');
+      const fileInfo = document.getElementById('file-info');
+      const fileNameDisp = document.getElementById('file-name');
+      const fileSizeDisp = document.getElementById('file-size');
+      const removeFileBtn = document.getElementById('remove-file-btn');
+
+      // Sandbox generators buttons
+      const genAcidicBtn = document.getElementById('gen-acidic-btn');
+      const genAlkalineBtn = document.getElementById('gen-alkaline-btn');
+      const genOptimalBtn = document.getElementById('gen-optimal-btn');
+
+      // User Authentication Elements
+      const signinBtn = document.getElementById('signin-btn');
+      const profileBtn = document.getElementById('profile-btn');
+      const profileDropdown = document.getElementById('profile-dropdown');
+      const userDisplayName = document.getElementById('user-display-name');
+      const userDisplayEmail = document.getElementById('user-display-email');
+      const userDisplayRegion = document.getElementById('user-display-region');
+      const signoutBtn = document.getElementById('signout-btn');
+
+      // Auth Modal Elements
+      const authModal = document.getElementById('auth-modal');
+      const authModalCard = document.getElementById('auth-modal-card');
+      const authModalTitle = document.getElementById('auth-modal-title');
+      const authModalSubtitle = document.getElementById('auth-modal-subtitle');
+      const closeAuthModal = document.getElementById('close-auth-modal');
+      const authForm = document.getElementById('auth-form');
+      const authTabLogin = document.getElementById('auth-tab-login');
+      const authTabRegister = document.getElementById('auth-tab-register');
+      const authEmail = document.getElementById('auth-email');
+      const authPassword = document.getElementById('auth-password');
+      const authRegionGroup = document.getElementById('auth-region-group');
+      const authRegion = document.getElementById('auth-region');
+      const authErrorAlert = document.getElementById('auth-error-alert');
+      const authErrorText = document.getElementById('auth-error-text');
+      const authSubmitBtn = document.getElementById('auth-submit-btn');
+
+      // Saved Reports History Elements
+      const savedReportsSection = document.getElementById('saved-reports-section');
+      const savedReportsList = document.getElementById('saved-reports-list');
+      const savedReportsCount = document.getElementById('saved-reports-count');
+
+      // Local Database Initial Seeding
+      let activeUser = null;
+      let authMode = 'login'; // 'login' or 'register'
+
+      const defaultUsers = [
+        { email: 'karthik@southindia.agri', password: 'farmpass', name: 'Farmer Karthik', region: 'Tamil Nadu' },
+        { email: 'kiran@karnataka.agri', password: 'farmpass', name: 'Farmer Kiran', region: 'Karnataka' }
+      ];
+
+      if (!localStorage.getItem('agrihelp_users')) {
+        localStorage.setItem('agrihelp_users', JSON.stringify(defaultUsers));
+      }
+
+      // Check current session
+      const savedSession = localStorage.getItem('agrihelp_active_session');
+      if (savedSession) {
+        activeUser = JSON.parse(savedSession);
+        updateUserUI();
+      }
+
+      // Toggle Profile Dropdown
+      profileBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        profileDropdown.classList.toggle('hidden');
+      });
+
+      document.addEventListener('click', () => {
+        profileDropdown.classList.add('hidden');
+      });
+
+      // Modal triggers
+      signinBtn.addEventListener('click', () => {
+        authErrorAlert.classList.add('hidden');
+        authModal.classList.remove('hidden');
+        setTimeout(() => {
+          authModalCard.classList.remove('scale-95', 'opacity-0');
+          authModalCard.classList.add('scale-100', 'opacity-100');
+        }, 10);
+      });
+
+      function closeModal() {
+        authModalCard.classList.add('scale-95', 'opacity-0');
+        authModalCard.classList.remove('scale-100', 'opacity-100');
+        setTimeout(() => {
+          authModal.classList.add('hidden');
+        }, 300);
+      }
+
+      closeAuthModal.addEventListener('click', closeModal);
+      authModal.addEventListener('click', (e) => {
+        if (e.target === authModal) {
+          closeModal();
+        }
+      });
+
+      // Tab Switching inside Modal
+      authTabLogin.addEventListener('click', () => {
+        authMode = 'login';
+        authTabLogin.className = "flex-1 py-1.5 text-xs font-bold text-slate-800 dark:text-slate-100 bg-white dark:bg-slate-700 rounded-lg shadow-sm focus:outline-none transition-all";
+        authTabRegister.className = "flex-1 py-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 focus:outline-none transition-all";
+        authRegionGroup.classList.add('hidden');
+        authModalTitle.innerHTML = `<i class="fa-solid fa-lock text-emerald-600"></i> Farmer Sign In`;
+        authModalSubtitle.textContent = "Access your reports history and saved fields.";
+        authSubmitBtn.textContent = "Sign In";
+        authErrorAlert.classList.add('hidden');
+      });
+
+      authTabRegister.addEventListener('click', () => {
+        authMode = 'register';
+        authTabRegister.className = "flex-1 py-1.5 text-xs font-bold text-slate-800 dark:text-slate-100 bg-white dark:bg-slate-700 rounded-lg shadow-sm focus:outline-none transition-all";
+        authTabLogin.className = "flex-1 py-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 focus:outline-none transition-all";
+        authRegionGroup.classList.remove('hidden');
+        authModalTitle.innerHTML = `<i class="fa-solid fa-user-plus text-emerald-600"></i> Register Profile`;
+        authModalSubtitle.textContent = "Create a custom profile to track your agronomic history.";
+        authSubmitBtn.textContent = "Register Account";
+        authErrorAlert.classList.add('hidden');
+      });
+
+      // Form Submit (Auth Logic)
+      authForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        authErrorAlert.classList.add('hidden');
+
+        const email = authEmail.value.trim().toLowerCase();
+        const password = authPassword.value;
+        const users = JSON.parse(localStorage.getItem('agrihelp_users')) || [];
+
+        if (authMode === 'login') {
+          const user = users.find(u => u.email === email && u.password === password);
+          if (user) {
+            activeUser = user;
+            localStorage.setItem('agrihelp_active_session', JSON.stringify(user));
+            closeModal();
+            updateUserUI();
+          } else {
+            showAuthError("Invalid email or password. Use karthik@southindia.agri / farmpass to test.");
+          }
+        } else {
+          // Register Mode
+          if (users.some(u => u.email === email)) {
+            showAuthError("This email is already registered.");
+            return;
+          }
+          const newUser = {
+            email: email,
+            password: password,
+            name: email.split('@')[0].toUpperCase(),
+            region: authRegion.value
+          };
+          users.push(newUser);
+          localStorage.setItem('agrihelp_users', JSON.stringify(users));
+          activeUser = newUser;
+          localStorage.setItem('agrihelp_active_session', JSON.stringify(newUser));
+          closeModal();
+          updateUserUI();
+        }
+      });
+
+      function showAuthError(message) {
+        authErrorText.textContent = message;
+        authErrorAlert.classList.remove('hidden');
+      }
+
+      // Log Out
+      signoutBtn.addEventListener('click', () => {
+        activeUser = null;
+        localStorage.removeItem('agrihelp_active_session');
+        updateUserUI();
+        parsedSoilData = null;
+        fileInfo.classList.add('hidden');
+        dropZone.classList.remove('hidden');
+        updateDashboard();
+      });
+
+      // Sync user preferences, profiles & history
+      function updateUserUI() {
+        if (activeUser) {
+          signinBtn.classList.add('hidden');
+          profileBtn.classList.remove('hidden');
+          userDisplayName.textContent = activeUser.name;
+          userDisplayEmail.textContent = activeUser.email;
+          userDisplayRegion.textContent = activeUser.region;
+          savedReportsSection.classList.remove('hidden');
+          renderSavedReportsHistory();
+        } else {
+          signinBtn.classList.remove('hidden');
+          profileBtn.classList.add('hidden');
+          savedReportsSection.classList.add('hidden');
+        }
+      }
+
+      // Render Soil Test History List
+      function renderSavedReportsHistory() {
+        if (!activeUser) return;
+        const key = `agrihelp_reports_${activeUser.email}`;
+        const reports = JSON.parse(localStorage.getItem(key)) || [];
+        
+        savedReportsCount.textContent = `${reports.length} report${reports.length !== 1 ? 's' : ''}`;
+        savedReportsList.innerHTML = '';
+
+        if (reports.length === 0) {
+          savedReportsList.innerHTML = `<li class="text-[10px] text-slate-400 dark:text-slate-500 py-3 text-center italic">No saved reports. Upload a document to save.</li>`;
+          return;
+        }
+
+        reports.forEach(rep => {
+          const li = document.createElement('li');
+          li.className = `flex items-center justify-between p-2 rounded-xl border border-slate-100 dark:border-slate-800/80 bg-slate-50/30 dark:bg-slate-900/30 hover:bg-emerald-50/20 dark:hover:bg-emerald-950/10 cursor-pointer transition-colors group min-w-0`;
+          li.onclick = () => {
+            parsedSoilData = parseSoilReportText(rep.rawText);
+            fileNameDisp.textContent = rep.name;
+            fileSizeDisp.textContent = "Saved";
+            dropZone.classList.add('hidden');
+            fileInfo.classList.remove('hidden');
+            updateDashboard();
+          };
+
+          li.innerHTML = `
+            <div class="flex items-center gap-2 min-w-0">
+              <i class="fa-solid fa-file-invoice text-emerald-600 dark:text-emerald-500 text-sm flex-shrink-0"></i>
+              <div class="min-w-0">
+                <p class="text-[11px] font-bold text-slate-800 dark:text-slate-200 truncate">${rep.name}</p>
+                <p class="text-[9px] text-slate-400 dark:text-slate-500">${rep.timestamp}</p>
+              </div>
+            </div>
+            <button onclick="event.stopPropagation(); deleteSavedReport('${rep.id}')" class="text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity p-1" title="Delete report">
+              <i class="fa-solid fa-trash-can text-[10px]"></i>
+            </button>
+          `;
+          savedReportsList.appendChild(li);
+        });
+      }
+
+      window.deleteSavedReport = function(id) {
+        if (!activeUser) return;
+        const key = `agrihelp_reports_${activeUser.email}`;
+        let reports = JSON.parse(localStorage.getItem(key)) || [];
+        reports = reports.filter(r => r.id !== id);
+        localStorage.setItem(key, JSON.stringify(reports));
+        renderSavedReportsHistory();
+        
+        // If the active loaded file matches, remove it
+        parsedSoilData = null;
+        fileInfo.classList.add('hidden');
+        dropZone.classList.remove('hidden');
+        updateDashboard();
+      };
+
+      // Save a report to history
+      function saveReportToUser(name, rawText) {
+        if (!activeUser) return;
+        const key = `agrihelp_reports_${activeUser.email}`;
+        const reports = JSON.parse(localStorage.getItem(key)) || [];
+
+        // Check if report name already exists in history to prevent duplicates
+        if (reports.some(r => r.name === name)) {
+          return;
+        }
+
+        const newReport = {
+          id: Date.now().toString(),
+          name: name,
+          timestamp: new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }),
+          rawText: rawText
+        };
+
+        reports.unshift(newReport);
+        localStorage.setItem(key, JSON.stringify(reports));
+        renderSavedReportsHistory();
+      }
+
+      // Top Level Dashboard Tab Switching
+      const navButtons = [navAdvisories, navAnalytics, navSoil, navTasks];
+      const panes = [paneAdvisories, paneAnalytics, paneSoil, paneTasks];
+
+      function switchTab(targetIndex) {
+        navButtons.forEach((btn, index) => {
+          if (index === targetIndex) {
+            btn.className = "flex-1 min-w-[120px] py-3 text-xs sm:text-sm font-bold rounded-2xl flex items-center justify-center gap-2 bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 focus:outline-none transition-all";
+            panes[index].classList.remove('hidden');
+          } else {
+            btn.className = "flex-1 min-w-[120px] py-3 text-xs sm:text-sm font-bold rounded-2xl flex items-center justify-center gap-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/30 focus:outline-none transition-all";
+            panes[index].classList.add('hidden');
+          }
+        });
+      }
+
+      navAdvisories.addEventListener('click', () => switchTab(0));
+      navAnalytics.addEventListener('click', () => {
+        switchTab(1);
+        if (trendChart) {
+          trendChart.resize();
+        }
+      });
+      navSoil.addEventListener('click', () => switchTab(2));
+      navTasks.addEventListener('click', () => switchTab(3));
+
+      // Trigger file browsing
+      browseBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        fileInput.click();
+      });
+
+      dropZone.addEventListener('click', () => {
+        fileInput.click();
+      });
+
+      // Drag and Drop styling
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          dropZone.classList.add('border-emerald-500', 'bg-emerald-50/10');
+        }, false);
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          dropZone.classList.remove('border-emerald-500', 'bg-emerald-50/10');
+        }, false);
+      });
+
+      // Handle drop
+      dropZone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        if (files.length) {
+          handleSoilFile(files[0]);
+        }
+      });
+
+      // Handle file selection
+      fileInput.addEventListener('change', (e) => {
+        const files = e.target.files;
+        if (files.length) {
+          handleSoilFile(files[0]);
+        }
+      });
+
+      // Handle soil test file upload reading
+      function handleSoilFile(file) {
+        fileNameDisp.textContent = file.name;
+        fileSizeDisp.textContent = `${(file.size / 1024).toFixed(2)} KB`;
+        dropZone.classList.add('hidden');
+        fileInfo.classList.remove('hidden');
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const contents = e.target.result;
+          parsedSoilData = parseSoilReportText(contents);
+          saveReportToUser(file.name, contents);
+          updateDashboard();
+        };
+        reader.readAsText(file);
+      }
+
+      // Remove Uploaded File
+      removeFileBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        fileInput.value = '';
+        parsedSoilData = null;
+        fileInfo.classList.add('hidden');
+        dropZone.classList.remove('hidden');
+        updateDashboard();
+      });
+
+      // Text parser for soil test metrics
+      function parseSoilReportText(text) {
+        const data = {};
+        
+        // Match pH: e.g. "Soil pH: 5.2" or "pH: 5.2" or "pH = 5.2" or "pH is 5.2"
+        const phMatch = text.match(/pH\s*[:=is\s]+\s*([0-9.]+)/i);
+        if (phMatch) {
+          data.ph = parseFloat(phMatch[1]);
+        }
+
+        // Match Nitrogen (N): e.g. "Nitrogen (N): 180" or "N: Low" or "Nitrogen: Low"
+        const nMatch = text.match(/(?:Nitrogen|N)\s*(?:\(N\))?\s*[:=is\s]+\s*(\w+|\d+)/i);
+        if (nMatch) {
+          const val = nMatch[1];
+          data.n = isNaN(val) ? val : parseInt(val);
+        }
+
+        // Match Phosphorus (P)
+        const pMatch = text.match(/(?:Phosphorus|P)\s*(?:\(P\))?\s*[:=is\s]+\s*(\w+|\d+)/i);
+        if (pMatch) {
+          const val = pMatch[1];
+          data.p = isNaN(val) ? val : parseInt(val);
+        }
+
+        // Match Potassium (K)
+        const kMatch = text.match(/(?:Potassium|K)\s*(?:\(K\))?\s*[:=is\s]+\s*(\w+|\d+)/i);
+        if (kMatch) {
+          const val = kMatch[1];
+          data.k = isNaN(val) ? val : parseInt(val);
+        }
+
+        return data;
+      }
+
+      // Generate Sandbox Sample Soil Reports (direct loading & dynamic file triggers)
+      function loadSandboxReport(type, title, textContent) {
+        parsedSoilData = parseSoilReportText(textContent);
+        const fileName = `${type}_soil_report.txt`;
+        
+        fileNameDisp.textContent = fileName;
+        fileSizeDisp.textContent = `Sandbox`;
+        dropZone.classList.add('hidden');
+        fileInfo.classList.remove('hidden');
+        
+        saveReportToUser(fileName, textContent);
+        updateDashboard();
+
+        // Dynamically trigger file download for sandbox testing (value addition)
+        try {
+          const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = fileName;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+        } catch (err) {
+          console.error("Download failed, loaded client-side directly:", err);
+        }
+      }
+
+      genAcidicBtn.addEventListener('click', () => {
+        const text = `==========================================
+SOIL TEST LABORATORY REPORT - REGIONAL HUB
+==========================================
+Report Reference: STR-2026-9081B
+Farmer Name: South India Agri Sandbox
+
+ANALYZED SOIL METRICS:
+------------------------------------------
+Soil pH: 4.8 (Highly Acidic)
+Nitrogen (N): Low (150 kg/ha)
+Phosphorus (P): Low (10 kg/ha)
+Potassium (K): Low (80 kg/ha)
+==========================================`;
+        loadSandboxReport('acidic_low_npk', 'Acidic & Low NPK Report', text);
+      });
+
+      genAlkalineBtn.addEventListener('click', () => {
+        const text = `==========================================
+SOIL TEST LABORATORY REPORT - REGIONAL HUB
+==========================================
+Report Reference: STR-2026-9082C
+Farmer Name: South India Agri Sandbox
+
+ANALYZED SOIL METRICS:
+------------------------------------------
+Soil pH: 8.5 (Highly Alkaline)
+Nitrogen (N): Low (120 kg/ha)
+Phosphorus (P): Low (8 kg/ha)
+Potassium (K): Low (75 kg/ha)
+==========================================`;
+        loadSandboxReport('alkaline_low_npk', 'Alkaline & Low NPK Report', text);
+      });
+
+      genOptimalBtn.addEventListener('click', () => {
+        const text = `==========================================
+SOIL TEST LABORATORY REPORT - REGIONAL HUB
+==========================================
+Report Reference: STR-2026-9080A
+Farmer Name: South India Agri Sandbox
+
+ANALYZED SOIL METRICS:
+------------------------------------------
+Soil pH: 6.8 (Optimal)
+Nitrogen (N): High (340 kg/ha)
+Phosphorus (P): High (38 kg/ha)
+Potassium (K): High (185 kg/ha)
+==========================================`;
+        loadSandboxReport('optimal_soil_report', 'Perfect Soil Report', text);
+      });
+
+      // Attach Listeners
+      cropSelect.addEventListener('change', updateDashboard);
+      stageSelect.addEventListener('change', updateDashboard);
+      tempSlider.addEventListener('input', updateDashboard);
+      moistureSlider.addEventListener('input', updateDashboard);
+      humiditySlider.addEventListener('input', updateDashboard);
+      phSlider.addEventListener('input', updateDashboard);
+      simulateBtn.addEventListener('click', () => {
+        updateDashboard();
+      });
+
+      // Initial calculation & checklist load
+      updateDashboard();
+      saveAndRenderChecklist();
+    });
+  </script>
+
+  <!-- Sign In & Registration Modal -->
+  <div id="auth-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 transition-all duration-300">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl border border-slate-100 dark:border-slate-800 shadow-2xl overflow-hidden transform transition-all scale-95 opacity-0 duration-300" id="auth-modal-card">
+      
+      <!-- Modal Header -->
+      <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-850/20">
+        <div>
+          <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2" id="auth-modal-title">
+            <i class="fa-solid fa-lock text-emerald-600"></i> Farmer Sign In
+          </h3>
+          <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5" id="auth-modal-subtitle">Access your reports history and saved fields.</p>
+        </div>
+        <button id="close-auth-modal" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-350 p-1">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <form id="auth-form" class="p-6 space-y-4">
+        
+        <!-- Tab Select Inside Modal -->
+        <div class="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+          <button type="button" id="auth-tab-login" class="flex-1 py-1.5 text-xs font-bold text-slate-800 dark:text-slate-100 bg-white dark:bg-slate-700 rounded-lg shadow-sm focus:outline-none transition-all">
+            Sign In
+          </button>
+          <button type="button" id="auth-tab-register" class="flex-1 py-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 focus:outline-none transition-all">
+            Register
+          </button>
+        </div>
+
+        <div class="space-y-3">
+          <!-- Email -->
+          <div class="space-y-1">
+            <label for="auth-email" class="text-xs font-bold text-slate-700 dark:text-slate-300">Farmer Email or ID</label>
+            <input type="email" id="auth-email" required placeholder="farmer@southindia.agri" class="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/40 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-900 dark:text-white">
+          </div>
+
+          <!-- Password -->
+          <div class="space-y-1">
+            <label for="auth-password" class="text-xs font-bold text-slate-700 dark:text-slate-300">Security Password</label>
+            <input type="password" id="auth-password" required placeholder="••••••••" class="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/40 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-900 dark:text-white">
+          </div>
+
+          <!-- Region (Shown only on Registration) -->
+          <div class="space-y-1 hidden" id="auth-region-group">
+            <label for="auth-region" class="text-xs font-bold text-slate-700 dark:text-slate-300">Agricultural Region</label>
+            <select id="auth-region" class="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/40 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-900 dark:text-white">
+              <option value="Tamil Nadu">Tamil Nadu (TN)</option>
+              <option value="Karnataka">Karnataka (KA)</option>
+              <option value="Andhra Pradesh">Andhra Pradesh (AP)</option>
+              <option value="Kerala">Kerala (KL)</option>
+              <option value="Maharashtra">Maharashtra (MH)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Feedback Alert -->
+        <div id="auth-error-alert" class="hidden p-3 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 rounded-xl text-xs font-semibold text-red-700 dark:text-red-300 flex items-center gap-2">
+          <i class="fa-solid fa-circle-exclamation text-red-500 flex-shrink-0"></i>
+          <span id="auth-error-text">Incorrect credentials.</span>
+        </div>
+
+        <button type="submit" id="auth-submit-btn" class="w-full py-3 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition-all shadow-md">
+          Sign In
+        </button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
