@@ -6,8 +6,8 @@
   <title>AgriHelp Mini / அக்ரிஹெல்ப் மினி - Precision Agriculture Advisory Hub</title>
   
   <!-- SEO Meta Tags -->
-  <meta name="description" content="AgriHelp Mini is a precision farm advisory hub for South Indian farmers. Real-time climate simulation, crop health diagnostics, soil NPK analysis, and bilingual English/Tamil guidance.">
-  <meta name="keywords" content="AgriHelp, Smart Farming, Precision Agriculture, Tamil Nadu Agriculture, Rice, Cotton, Sugarcane, Soil NPK, Climate Simulation">
+  <meta name="description" content="AgriHelp Mini is a precision farm advisory hub for South Indian farmers. Real-time climate simulation, crop health diagnostics, soil NPK analysis, soil report adder and analyzer, and bilingual English/Tamil guidance.">
+  <meta name="keywords" content="AgriHelp, Smart Farming, Precision Agriculture, Tamil Nadu Agriculture, Rice, Cotton, Sugarcane, Soil Report Analyzer, Soil Health Card, NPK Calculator">
   <meta name="author" content="AgriHelp Mini">
 
   <!-- Tailwind CSS via CDN -->
@@ -113,6 +113,21 @@
     ::-webkit-scrollbar-thumb:hover {
       background: #94a3b8;
     }
+
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printable-soil-card, #printable-soil-card * {
+        visibility: visible;
+      }
+      #printable-soil-card {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+      }
+    }
   </style>
 </head>
 <body class="h-full bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans transition-colors duration-300 antialiased flex flex-col selection:bg-emerald-500 selection:text-white">
@@ -145,9 +160,9 @@
       </p>
 
       <p class="text-slate-600 dark:text-slate-300 text-sm sm:text-base max-w-lg mx-auto leading-relaxed mb-8">
-        Real-time climate simulation, dynamic pest & disease alerts, soil NPK diagnostics, and growth-stage advisories engineered for Tamil Nadu and South Indian farmers.
+        Real-time climate simulation, dynamic pest & disease alerts, soil report adder & analyzer, and growth-stage advisories engineered for Tamil Nadu and South Indian farmers.
         <span class="block text-xs text-slate-500 dark:text-slate-400 mt-1">
-          உடனடி தட்பவெப்பநிலை கணிப்பு, நோய் எச்சரிக்கைகள், மண் பரிசோதனை பரிந்துரைகள் மற்றும் பயிர் பாதுகாப்பு வழிகாட்டுதல்கள்.
+          உடனடி தட்பவெப்பநிலை கணிப்பு, நோய் எச்சரிக்கைகள், மண் பரிசோதனை அறிக்கை பகுப்பாய்வு மற்றும் பயிர் பாதுகாப்பு வழிகாட்டுதல்கள்.
         </span>
       </p>
 
@@ -165,8 +180,8 @@
         </div>
         <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/50">
           <i class="fa-solid fa-flask-vial text-sky-500 mb-1.5 text-base"></i>
-          <p class="text-xs font-semibold text-slate-900 dark:text-white">Soil NPK Lab</p>
-          <p class="text-[11px] text-slate-500 dark:text-slate-400">மண் பரிசோதனை</p>
+          <p class="text-xs font-semibold text-slate-900 dark:text-white">Report Analyzer</p>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">மண் அறிக்கை ஆய்வு</p>
         </div>
         <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/50">
           <i class="fa-solid fa-list-check text-purple-500 mb-1.5 text-base"></i>
@@ -345,12 +360,12 @@
         </div>
       </button>
 
-      <!-- Tab 3: Soil Lab Diagnostics -->
+      <!-- Tab 3: Soil Lab & Report Analyzer -->
       <button id="tab-btn-soil" onclick="app.switchTab('soil')" class="tab-btn flex-1 min-w-[170px] flex items-center justify-center gap-2.5 py-3.5 px-4 rounded-xl font-bold text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all">
         <i class="fa-solid fa-flask-vial text-base"></i>
         <div class="text-left">
-          <div class="leading-tight">Soil Lab & NPK</div>
-          <div class="text-[10px] font-medium opacity-80">மண் வளம் & உரம்</div>
+          <div class="leading-tight">Soil Lab & Analyzer</div>
+          <div class="text-[10px] font-medium opacity-80">மண் அறிக்கை ஆய்வு</div>
         </div>
       </button>
 
@@ -607,210 +622,371 @@
     </div>
 
     <!-- ======================================================== -->
-    <!-- TAB 3: SOIL LAB & NPK DIAGNOSTICS                       -->
+    <!-- TAB 3: SOIL LAB, REPORT ADDER & ANALYZER                -->
     <!-- ======================================================== -->
     <div id="tab-content-soil" class="tab-content hidden space-y-8">
       
-      <!-- 1-Click Soil Presets Card -->
-      <div class="bg-white dark:bg-slate-900 rounded-3xl p-7 shadow-sm border border-slate-200/80 dark:border-slate-800">
-        <div class="mb-4">
-          <h2 class="text-lg font-extrabold text-slate-900 dark:text-white">1-Click Regional Soil Presets</h2>
-          <p class="text-xs text-slate-500 dark:text-slate-400">தென்னிந்திய மண் வகை மாதிரிகள் - உடனடி தேர்வு</p>
+      <!-- Top Navigation for Soil Lab Modes -->
+      <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-slate-200/80 dark:border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div>
+          <h2 class="text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2.5">
+            <i class="fa-solid fa-flask-vial text-emerald-600 dark:text-emerald-400"></i>
+            <span>Soil Report Adder & Scientific Lab Analyzer</span>
+          </h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            மண் பரிசோதனை அறிக்கை பதிவேற்றம், ஆய்வு மற்றும் பரிந்துரைக்கப்பட்ட உரம் திட்டமிடல்
+          </p>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          
-          <button onclick="app.applySoilPreset('alluvial')" class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/80 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 border border-slate-200 dark:border-slate-700 text-left transition-all group">
-            <div class="flex items-center justify-between mb-2">
-              <i class="fa-solid fa-water text-emerald-600 group-hover:scale-110 transition-transform"></i>
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">Delta</span>
-            </div>
-            <h4 class="text-sm font-bold text-slate-900 dark:text-white">Thanjavur Alluvial</h4>
-            <p class="text-xs text-slate-500 dark:text-slate-400">தஞ்சாவூர் வண்டல் மண்</p>
-            <div class="text-[11px] text-slate-400 mt-2">N: Medium | P: High | pH: 6.8</div>
+        <!-- Mode Toggle Pill -->
+        <div class="flex items-center gap-1 p-1.5 bg-slate-100 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">
+          <button id="btn-mode-adder" onclick="app.switchSoilMode('adder')" class="px-4 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-sm transition-all">
+            <i class="fa-solid fa-file-import mr-1.5"></i> Report Adder / அறிக்கை
           </button>
-
-          <button onclick="app.applySoilPreset('black')" class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/80 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 border border-slate-200 dark:border-slate-700 text-left transition-all group">
-            <div class="flex items-center justify-between mb-2">
-              <i class="fa-solid fa-mountain text-slate-600 group-hover:scale-110 transition-transform"></i>
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">Cotton Belt</span>
-            </div>
-            <h4 class="text-sm font-bold text-slate-900 dark:text-white">Coimbatore Black Soil</h4>
-            <p class="text-xs text-slate-500 dark:text-slate-400">கோவை கரிசல் மண்</p>
-            <div class="text-[11px] text-slate-400 mt-2">N: Low | K: High | pH: 7.8</div>
+          <button id="btn-mode-sliders" onclick="app.switchSoilMode('sliders')" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all">
+            <i class="fa-solid fa-sliders mr-1.5"></i> Manual Sliders / அளவீடுகள்
           </button>
-
-          <button onclick="app.applySoilPreset('red')" class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/80 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 border border-slate-200 dark:border-slate-700 text-left transition-all group">
-            <div class="flex items-center justify-between mb-2">
-              <i class="fa-solid fa-cubes-stacked text-amber-600 group-hover:scale-110 transition-transform"></i>
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300">Dry Zone</span>
-            </div>
-            <h4 class="text-sm font-bold text-slate-900 dark:text-white">Madurai Red Loam</h4>
-            <p class="text-xs text-slate-500 dark:text-slate-400">மதுரை செம்மண்</p>
-            <div class="text-[11px] text-slate-400 mt-2">N: Low | P: Low | pH: 6.2</div>
-          </button>
-
-          <button onclick="app.applySoilPreset('saline')" class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/80 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 border border-slate-200 dark:border-slate-700 text-left transition-all group">
-            <div class="flex items-center justify-between mb-2">
-              <i class="fa-solid fa-wind text-purple-600 group-hover:scale-110 transition-transform"></i>
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300">Coastal</span>
-            </div>
-            <h4 class="text-sm font-bold text-slate-900 dark:text-white">Coastal Saline Soil</h4>
-            <p class="text-xs text-slate-500 dark:text-slate-400">கடலோர உவர் மண்</p>
-            <div class="text-[11px] text-slate-400 mt-2">N: Low | Saline | pH: 8.6</div>
-          </button>
-
         </div>
       </div>
 
-      <!-- Main Soil Diagnostic Calculator -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <!-- SECTION A: SOIL REPORT ADDER & FILE UPLOADER (Default) -->
+      <div id="soil-section-adder" class="bg-white dark:bg-slate-900 rounded-3xl p-7 sm:p-8 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-6">
         
-        <!-- Left: Sliders for Lab NPK (5 cols) -->
-        <div class="lg:col-span-5 bg-white dark:bg-slate-900 rounded-3xl p-7 sm:p-8 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-6">
-          <div class="border-b border-slate-100 dark:border-slate-800 pb-3">
-            <h3 class="text-base font-extrabold text-slate-900 dark:text-white">Soil Test Parameter Inputs</h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400">மண் பரிசோதனை அளவீடுகள் (கிலோ/ஹெக்டேர்)</p>
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <h3 class="text-base font-extrabold text-slate-900 dark:text-white">
+              Add New Soil Test Report / மண் பரிசோதனை அறிக்கை சேர்த்தல்
+            </h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">
+              Upload a lab test file or paste raw Soil Health Card / TNAU test text below
+            </p>
+          </div>
+          
+          <!-- Sample Loaders -->
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-[11px] font-bold text-slate-400 uppercase">Sample Reports:</span>
+            <button onclick="app.loadSampleSoilReport('tnau_delta')" class="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-xs font-bold hover:bg-emerald-100 transition-colors">
+              Delta Alluvial
+            </button>
+            <button onclick="app.loadSampleSoilReport('tnau_black')" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold hover:bg-slate-200 transition-colors">
+              Black Cotton
+            </button>
+            <button onclick="app.loadSampleSoilReport('tnau_red')" class="px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 text-xs font-bold hover:bg-amber-100 transition-colors">
+              Madurai Red Loam
+            </button>
+            <button onclick="app.loadSampleSoilReport('tnau_alkaline')" class="px-2.5 py-1 rounded-lg bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 text-xs font-bold hover:bg-purple-100 transition-colors">
+              Alkaline Saline
+            </button>
+          </div>
+        </div>
+
+        <!-- Field Info & Upload Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          <!-- Drag & Drop Upload Zone (4 cols) -->
+          <div class="lg:col-span-4 flex flex-col justify-between p-6 rounded-2xl border-2 border-dashed border-emerald-300/80 dark:border-emerald-700/60 bg-emerald-50/30 dark:bg-emerald-950/10 text-center hover:border-emerald-500 transition-all cursor-pointer relative" onclick="document.getElementById('soil-file-input').click()">
+            <input type="file" id="soil-file-input" accept=".txt,.csv,.json,.pdf" class="hidden" onchange="app.handleSoilFileUpload(event)">
+            
+            <div class="my-auto space-y-3">
+              <div class="w-14 h-14 rounded-2xl bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 mx-auto flex items-center justify-center text-2xl shadow-sm">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+              </div>
+              <div>
+                <h4 class="text-sm font-bold text-slate-900 dark:text-white">Upload Soil Report File</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">மண் பரிசோதனை கோப்பை பதிவேற்றவும்</p>
+                <p class="text-[11px] text-slate-400 mt-2">Supports .txt, .csv, .json text formats</p>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-emerald-200/50 dark:border-emerald-800/40 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300">
+              <i class="fa-solid fa-mouse-pointer mr-1"></i> Click or Drag & Drop File
+            </div>
           </div>
 
+          <!-- Raw Text Paste & Named Plot Inputs (8 cols) -->
+          <div class="lg:col-span-8 space-y-4">
+            
+            <!-- Plot / Farmer Field Name Input -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label for="soil-plot-name" class="block mb-1 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                  <span>Farmer / Plot Name</span>
+                  <span class="text-slate-400 font-normal">/ நிலத்தின் பெயர்</span>
+                </label>
+                <input type="text" id="soil-plot-name" value="Karthik - Cauvery Delta Plot 4" placeholder="e.g. North Field - Plot 2" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-semibold focus:ring-2 focus:ring-emerald-500 transition-all">
+              </div>
+
+              <div>
+                <label for="soil-testing-lab" class="block mb-1 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                  <span>Testing Laboratory</span>
+                  <span class="text-slate-400 font-normal">/ பரிசோதனை ஆய்வகம்</span>
+                </label>
+                <input type="text" id="soil-testing-lab" value="TNAU Soil Testing Laboratory, Aduthurai" placeholder="e.g. Govt Soil Health Center" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-semibold focus:ring-2 focus:ring-emerald-500 transition-all">
+              </div>
+            </div>
+
+            <!-- Textarea for Raw Lab Report -->
+            <div>
+              <label for="soil-raw-text" class="block mb-1 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                <span>Soil Lab Report Text / Content</span>
+                <span class="text-slate-400 font-normal">/ ஆய்வக அறிக்கை விவரங்கள்</span>
+              </label>
+              <textarea id="soil-raw-text" rows="5" placeholder="Paste your Soil Health Card / Lab test values here...
+Example:
+Soil Texture: Clay Loam
+pH: 6.8
+EC: 0.45 dS/m
+Organic Carbon: 0.52%
+Available Nitrogen (N): 260 kg/ha
+Available Phosphorus (P): 18 kg/ha
+Available Potassium (K): 220 kg/ha
+Zinc (Zn): 0.75 ppm
+Iron (Fe): 5.1 ppm" class="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-mono leading-relaxed focus:ring-2 focus:ring-emerald-500 transition-all"></textarea>
+            </div>
+
+            <!-- Action Buttons Bar -->
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+              <div class="flex items-center gap-2">
+                <button id="btn-analyze-soil-report" onclick="app.analyzeCurrentSoilReport()" class="px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-sm shadow-md shadow-emerald-600/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i>
+                  <span>Analyze Report & Prescribe</span>
+                  <span class="text-emerald-200 font-normal text-xs">/ ஆய்வு செய்க</span>
+                </button>
+
+                <button id="btn-save-soil-report" onclick="app.saveSoilReportToHistory()" class="px-4 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs transition-all flex items-center gap-2">
+                  <i class="fa-solid fa-floppy-disk"></i>
+                  <span>Save Report</span>
+                </button>
+              </div>
+
+              <div id="soil-status-toast" class="hidden text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+                <i class="fa-solid fa-circle-check"></i>
+                <span id="soil-status-toast-text">Report Analyzed Successfully!</span>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- SECTION B: MANUAL SLIDERS (Toggled via Mode Pill) -->
+      <div id="soil-section-sliders" class="hidden bg-white dark:bg-slate-900 rounded-3xl p-7 sm:p-8 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-6">
+        
+        <div class="border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center justify-between">
+          <div>
+            <h3 class="text-base font-extrabold text-slate-900 dark:text-white">Manual Soil Parameter Sliders</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">ஸ்லைடர்களை நகர்த்தி கைமுறையாக அளவீடுகளை மாற்றவும்</p>
+          </div>
+          <button onclick="app.switchSoilMode('adder')" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline">
+            <i class="fa-solid fa-arrow-left mr-1"></i> Back to Report Adder
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <!-- Nitrogen (N) -->
-          <div class="space-y-2">
+          <div class="space-y-2 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60">
             <div class="flex justify-between items-center text-xs font-bold text-slate-600 dark:text-slate-300">
-              <span>Nitrogen (N) / தழைச்சத்து</span>
+              <span>Nitrogen (N)</span>
               <span id="val-soil-n" class="font-mono text-emerald-600 font-extrabold">240 kg/ha</span>
             </div>
             <input type="range" id="slider-soil-n" min="50" max="600" step="5" value="240" class="w-full h-2.5 bg-slate-200 dark:bg-slate-700 rounded-lg">
             <div class="flex justify-between text-[10px] text-slate-400">
               <span>Low (< 280)</span>
-              <span>Medium (280-450)</span>
               <span>High (> 450)</span>
             </div>
           </div>
 
           <!-- Phosphorus (P) -->
-          <div class="space-y-2">
+          <div class="space-y-2 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60">
             <div class="flex justify-between items-center text-xs font-bold text-slate-600 dark:text-slate-300">
-              <span>Phosphorus (P) / மணிச்சத்து</span>
+              <span>Phosphorus (P)</span>
               <span id="val-soil-p" class="font-mono text-amber-600 font-extrabold">16 kg/ha</span>
             </div>
             <input type="range" id="slider-soil-p" min="5" max="60" step="1" value="16" class="w-full h-2.5 bg-slate-200 dark:bg-slate-700 rounded-lg">
             <div class="flex justify-between text-[10px] text-slate-400">
               <span>Low (< 11)</span>
-              <span>Medium (11-22)</span>
               <span>High (> 22)</span>
             </div>
           </div>
 
           <!-- Potassium (K) -->
-          <div class="space-y-2">
+          <div class="space-y-2 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60">
             <div class="flex justify-between items-center text-xs font-bold text-slate-600 dark:text-slate-300">
-              <span>Potassium (K) / சாம்பல் சத்து</span>
+              <span>Potassium (K)</span>
               <span id="val-soil-k" class="font-mono text-sky-600 font-extrabold">190 kg/ha</span>
             </div>
             <input type="range" id="slider-soil-k" min="50" max="500" step="5" value="190" class="w-full h-2.5 bg-slate-200 dark:bg-slate-700 rounded-lg">
             <div class="flex justify-between text-[10px] text-slate-400">
               <span>Low (< 140)</span>
-              <span>Medium (140-280)</span>
               <span>High (> 280)</span>
             </div>
           </div>
 
           <!-- Soil pH -->
-          <div class="space-y-2">
+          <div class="space-y-2 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60">
             <div class="flex justify-between items-center text-xs font-bold text-slate-600 dark:text-slate-300">
-              <span>Soil Acidity / Alkalinity (pH)</span>
+              <span>Soil Acidity (pH)</span>
               <span id="val-soil-ph" class="font-mono text-purple-600 font-extrabold">6.5</span>
             </div>
             <input type="range" id="slider-soil-ph" min="4.0" max="9.5" step="0.1" value="6.5" class="w-full h-2.5 bg-slate-200 dark:bg-slate-700 rounded-lg">
             <div class="flex justify-between text-[10px] text-slate-400">
-              <span>Acidic (< 6.0)</span>
-              <span>Optimal (6.5 - 7.5)</span>
-              <span>Alkaline (> 8.0)</span>
+              <span>Acid (< 6.0)</span>
+              <span>Alkali (> 8.0)</span>
             </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- SECTION C: ANALYZER DIAGNOSTICS & PRESCRIPTION CARD -->
+      <div id="printable-soil-card" class="bg-white dark:bg-slate-900 rounded-3xl p-7 sm:p-8 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-7">
+        
+        <!-- Header of the Diagnostic Analysis -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-5">
+          <div>
+            <div class="flex items-center gap-3">
+              <span id="soil-card-plot-badge" class="text-sm font-extrabold text-slate-900 dark:text-white">
+                Karthik - Cauvery Delta Plot 4
+              </span>
+              <span id="soil-grade-badge" class="px-3 py-0.5 rounded-full text-xs font-extrabold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                GRADE B+ (Moderately Fertile)
+              </span>
+            </div>
+            <p id="soil-card-lab-subtitle" class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              Tested by: TNAU Soil Testing Laboratory, Aduthurai • Evaluated for: <strong id="soil-target-crop-name" class="text-emerald-600 dark:text-emerald-400">Rice (Oryza sativa)</strong>
+            </p>
+          </div>
+
+          <button id="btn-print-soil-card" onclick="window.print()" class="self-start sm:self-auto px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 transition-colors flex items-center gap-2">
+            <i class="fa-solid fa-print"></i>
+            <span>Print Soil Health Card</span>
+          </button>
+        </div>
+
+        <!-- 6 Core Lab Metric Values Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          
+          <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 text-center">
+            <div class="text-[10px] font-bold text-slate-400 uppercase">Nitrogen (N)</div>
+            <div id="card-metric-n" class="text-base font-extrabold text-slate-900 dark:text-white mt-1">260 kg/ha</div>
+            <span id="card-status-n" class="inline-block text-[10px] font-bold text-amber-600 mt-0.5">LOW (குறைவு)</span>
+          </div>
+
+          <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 text-center">
+            <div class="text-[10px] font-bold text-slate-400 uppercase">Phosphorus (P)</div>
+            <div id="card-metric-p" class="text-base font-extrabold text-slate-900 dark:text-white mt-1">18 kg/ha</div>
+            <span id="card-status-p" class="inline-block text-[10px] font-bold text-emerald-600 mt-0.5">OPTIMAL (மிதமானது)</span>
+          </div>
+
+          <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 text-center">
+            <div class="text-[10px] font-bold text-slate-400 uppercase">Potassium (K)</div>
+            <div id="card-metric-k" class="text-base font-extrabold text-slate-900 dark:text-white mt-1">220 kg/ha</div>
+            <span id="card-status-k" class="inline-block text-[10px] font-bold text-emerald-600 mt-0.5">OPTIMAL (மிதமானது)</span>
+          </div>
+
+          <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 text-center">
+            <div class="text-[10px] font-bold text-slate-400 uppercase">Soil pH</div>
+            <div id="card-metric-ph" class="text-base font-extrabold text-slate-900 dark:text-white mt-1">6.8</div>
+            <span id="card-status-ph" class="inline-block text-[10px] font-bold text-emerald-600 mt-0.5">NEUTRAL (ஏற்றது)</span>
+          </div>
+
+          <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 text-center">
+            <div class="text-[10px] font-bold text-slate-400 uppercase">Org. Carbon (OC)</div>
+            <div id="card-metric-oc" class="text-base font-extrabold text-slate-900 dark:text-white mt-1">0.52 %</div>
+            <span id="card-status-oc" class="inline-block text-[10px] font-bold text-amber-600 mt-0.5">MEDIUM (கரிமம்)</span>
+          </div>
+
+          <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 text-center">
+            <div class="text-[10px] font-bold text-slate-400 uppercase">Zinc (Zn)</div>
+            <div id="card-metric-zn" class="text-base font-extrabold text-slate-900 dark:text-white mt-1">0.75 ppm</div>
+            <span id="card-status-zn" class="inline-block text-[10px] font-bold text-rose-600 mt-0.5">DEFICIENT (குறைவு)</span>
           </div>
 
         </div>
 
-        <!-- Right: Diagnostic Report & Fertilizer Recommendation (7 cols) -->
-        <div class="lg:col-span-7 bg-white dark:bg-slate-900 rounded-3xl p-7 sm:p-8 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-6">
-          <div class="border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center justify-between">
+        <!-- Corrective Fertilizer Dosage Prescription (Per Acre Basis) -->
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
             <div>
-              <h3 class="text-base font-extrabold text-slate-900 dark:text-white">Corrective Fertilizer Dosage</h3>
-              <p class="text-xs text-slate-500 dark:text-slate-400">பரிந்துரைக்கப்படும் உர அளவு மற்றும் திருத்தம்</p>
+              <h4 class="text-sm font-extrabold text-slate-900 dark:text-white">
+                Agronomic Fertilizer Dosage / பரிந்துரைக்கப்படும் உர அளவு
+              </h4>
+              <p class="text-xs text-slate-500 dark:text-slate-400">
+                Calculated for target yield of <span id="soil-calc-target-crop" class="font-bold text-slate-800 dark:text-slate-200">Rice</span> per Acre
+              </p>
             </div>
             <span class="text-xs px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold">
-              Per Acre Basis / ஏக்கருக்கு
+              1 Acre (4047 sq.m) Basis
             </span>
           </div>
 
-          <!-- Nutrient Status Badges -->
-          <div class="grid grid-cols-3 gap-3">
-            <div id="badge-n-box" class="p-3.5 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/50 text-center">
-              <span class="text-xs font-bold text-slate-500">Nitrogen</span>
-              <div id="status-n-text" class="text-sm font-extrabold text-amber-600 dark:text-amber-400">DEFICIENT (குறைவு)</div>
+          <!-- Prescription Cards Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            
+            <!-- Urea -->
+            <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-emerald-700 dark:text-emerald-400">UREA (46% N) / யூரியா</span>
+                <span id="calc-urea-bags" class="text-xs px-2 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-200 font-bold">1.2 Bags</span>
+              </div>
+              <div id="calc-urea-qty" class="text-2xl font-extrabold text-slate-900 dark:text-white">58 kg / acre</div>
+              <p id="calc-urea-schedule" class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                Apply in 3 splits: 20 kg basal, 20 kg at active tillering (day 25), and 18 kg at panicle emergence (day 45).
+              </p>
             </div>
-            <div id="badge-p-box" class="p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/50 text-center">
-              <span class="text-xs font-bold text-slate-500">Phosphorus</span>
-              <div id="status-p-text" class="text-sm font-extrabold text-emerald-600 dark:text-emerald-400">OPTIMAL (மிதமானது)</div>
+
+            <!-- DAP / SSP -->
+            <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-amber-700 dark:text-amber-400">DAP / SSP / மணிச்சத்து</span>
+                <span id="calc-dap-bags" class="text-xs px-2 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-200 font-bold">0.6 Bags</span>
+              </div>
+              <div id="calc-dap-qty" class="text-2xl font-extrabold text-slate-900 dark:text-white">30 kg / acre</div>
+              <p id="calc-dap-schedule" class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                Apply 100% full dose as basal application before transplanting or sowing.
+              </p>
             </div>
-            <div id="badge-k-box" class="p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/50 text-center">
-              <span class="text-xs font-bold text-slate-500">Potassium</span>
-              <div id="status-k-text" class="text-sm font-extrabold text-emerald-600 dark:text-emerald-400">OPTIMAL (மிதமானது)</div>
+
+            <!-- MOP -->
+            <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-sky-700 dark:text-sky-400">MOP (Potash) / பொட்டாஷ்</span>
+                <span id="calc-mop-bags" class="text-xs px-2 py-0.5 rounded-md bg-sky-100 dark:bg-sky-950 text-sky-800 dark:text-sky-200 font-bold">0.5 Bags</span>
+              </div>
+              <div id="calc-mop-qty" class="text-2xl font-extrabold text-slate-900 dark:text-white">25 kg / acre</div>
+              <p id="calc-mop-schedule" class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                Apply in 2 equal splits (basal & panicle initiation) to strengthen crop straw and grain weight.
+              </p>
             </div>
+
           </div>
 
-          <!-- Prescribed Chemical & Bio Fertilizer Quantities -->
-          <div class="space-y-3 pt-2">
+          <!-- Micronutrient & Biofertilizer Schedule -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
             
-            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 flex items-start gap-4">
+            <div class="p-4 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/50 flex items-start gap-3.5">
               <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center shrink-0">
-                <i class="fa-solid fa-leaf text-base"></i>
+                <i class="fa-solid fa-bacteria text-base"></i>
               </div>
-              <div class="flex-1">
-                <div class="flex items-center justify-between">
-                  <h4 class="text-sm font-bold text-slate-900 dark:text-white">Urea (46% N) / யூரியா</h4>
-                  <span id="fert-urea-dose" class="text-sm font-extrabold text-emerald-600 dark:text-emerald-400">55 kg / acre</span>
-                </div>
-                <p id="fert-urea-desc" class="text-xs text-slate-500 mt-1">Apply in 3 splits (basal, tillering, panicle initiation). Mix with neem oil cake to prevent volatilization.</p>
-              </div>
-            </div>
-
-            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 flex items-start gap-4">
-              <div class="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-950 text-amber-600 flex items-center justify-center shrink-0">
-                <i class="fa-solid fa-cubes text-base"></i>
-              </div>
-              <div class="flex-1">
-                <div class="flex items-center justify-between">
-                  <h4 class="text-sm font-bold text-slate-900 dark:text-white">Super Phosphate (SSP / DAP) / டி.ஏ.பி அல்லது எஸ்.எஸ்.பி</h4>
-                  <span id="fert-dap-dose" class="text-sm font-extrabold text-amber-600 dark:text-amber-400">30 kg / acre</span>
-                </div>
-                <p id="fert-dap-desc" class="text-xs text-slate-500 mt-1">Apply full dose as basal application during final land preparation.</p>
+              <div>
+                <h5 class="text-xs font-extrabold text-emerald-900 dark:text-emerald-300">Biofertilizer & Organic Carbon Plan</h5>
+                <p id="soil-bio-rec" class="text-xs text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
+                  Apply 5 tonnes of Farm Yard Manure (FYM) or 2 tonnes of Vermicompost. Inoculate seedling roots with Azospirillum (2 kg/acre) & Phosphobacteria (2 kg/acre) mixed in 50 kg compost.
+                </p>
               </div>
             </div>
 
-            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 flex items-start gap-4">
-              <div class="w-10 h-10 rounded-xl bg-sky-100 dark:bg-sky-950 text-sky-600 flex items-center justify-center shrink-0">
-                <i class="fa-solid fa-jar text-base"></i>
-              </div>
-              <div class="flex-1">
-                <div class="flex items-center justify-between">
-                  <h4 class="text-sm font-bold text-slate-900 dark:text-white">Muriate of Potash (MOP) / பொட்டாஷ்</h4>
-                  <span id="fert-mop-dose" class="text-sm font-extrabold text-sky-600 dark:text-sky-400">25 kg / acre</span>
-                </div>
-                <p id="fert-mop-desc" class="text-xs text-slate-500 mt-1">Apply in 2 splits to boost grain filling and disease resistance.</p>
-              </div>
-            </div>
-
-            <div id="soil-amendment-card" class="p-4 rounded-2xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/60 flex items-start gap-4">
+            <div class="p-4 rounded-2xl bg-purple-50/50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800/50 flex items-start gap-3.5">
               <div class="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-950 text-purple-600 flex items-center justify-center shrink-0">
-                <i class="fa-solid fa-wand-magic-sparkles text-base"></i>
+                <i class="fa-solid fa-microchip text-base"></i>
               </div>
-              <div class="flex-1">
-                <div class="flex items-center justify-between">
-                  <h4 id="amendment-title" class="text-sm font-bold text-purple-900 dark:text-purple-300">Soil pH Amendment / மண் சீர்திருத்தம்</h4>
-                  <span id="amendment-status" class="text-xs font-bold text-purple-700 dark:text-purple-400">Optimal Range</span>
-                </div>
-                <p id="amendment-desc" class="text-xs text-purple-800/80 dark:text-purple-300/80 mt-1">Current soil pH (6.5) is in the ideal range. No lime or gypsum needed.</p>
+              <div>
+                <h5 class="text-xs font-extrabold text-purple-900 dark:text-purple-300">Micronutrient & Soil Health Protocol</h5>
+                <p id="soil-micro-rec" class="text-xs text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
+                  Zinc is deficient (< 0.8 ppm). Apply Zinc Sulphate (ZnSO4) at 10 kg/acre as basal. Do not mix directly with DAP.
+                </p>
               </div>
             </div>
 
@@ -818,6 +994,27 @@
 
         </div>
 
+      </div>
+
+      <!-- SECTION D: SAVED SOIL REPORTS HISTORY -->
+      <div class="bg-white dark:bg-slate-900 rounded-3xl p-7 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-5">
+        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+          <div>
+            <h3 class="text-base font-extrabold text-slate-900 dark:text-white">
+              Saved Soil Reports History / சேமிக்கப்பட்ட மண் அறிக்கைகள்
+            </h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">
+              Access your previous soil health cards and reload test parameters instantly
+            </p>
+          </div>
+          <span id="saved-reports-count" class="text-xs font-bold px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+            3 Saved Reports
+          </span>
+        </div>
+
+        <div id="saved-reports-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Dynamic saved report cards injected via JavaScript -->
+        </div>
       </div>
 
     </div>
@@ -923,8 +1120,8 @@
           In the Advisory Hub, slide temperature, soil moisture, humidity, and pH to simulate today's weather or extreme forecasts.
         </div>
         <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
-          <strong class="text-slate-900 dark:text-white block mb-1">3. Check Soil NPK Lab:</strong>
-          Switch to Tab 3 to check fertilizer dosage tailored to regional soil types (Thanjavur alluvial, Coimbatore black, Madurai red loam).
+          <strong class="text-slate-900 dark:text-white block mb-1">3. Soil Report Adder & Analyzer:</strong>
+          In Tab 3, upload or paste your soil test report, or click sample presets. The analyzer instantly calculates NPK health grades, exact fertilizer bags/kg per acre, and organic biofertilizers.
         </div>
         <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
           <strong class="text-slate-900 dark:text-white block mb-1">4. Manage Field Tasks:</strong>
@@ -962,6 +1159,8 @@
     /**
      * AgriHelp Mini Application Engine
      * Clean, reactive, modular state machine with zero DOM ID collisions.
+     * Features: Real-time climate simulator, crop health diagnostics,
+     * Soil Report Adder & Analyzer with auto-prescription, and Field Tasks.
      */
     const app = (function() {
       // -------------------------------------------------------------
@@ -1037,7 +1236,21 @@
         analyticsDurationDesc: document.getElementById('analytics-duration-desc'),
         climateChartCanvas: document.getElementById('crop-climate-chart'),
 
-        // Soil Lab
+        // Soil Lab & Report Adder
+        btnModeAdder: document.getElementById('btn-mode-adder'),
+        btnModeSliders: document.getElementById('btn-mode-sliders'),
+        soilSectionAdder: document.getElementById('soil-section-adder'),
+        soilSectionSliders: document.getElementById('soil-section-sliders'),
+        soilFileInput: document.getElementById('soil-file-input'),
+        soilPlotName: document.getElementById('soil-plot-name'),
+        soilTestingLab: document.getElementById('soil-testing-lab'),
+        soilRawText: document.getElementById('soil-raw-text'),
+        btnAnalyzeSoilReport: document.getElementById('btn-analyze-soil-report'),
+        btnSaveSoilReport: document.getElementById('btn-save-soil-report'),
+        soilStatusToast: document.getElementById('soil-status-toast'),
+        soilStatusToastText: document.getElementById('soil-status-toast-text'),
+
+        // Soil Manual Sliders
         sliderSoilN: document.getElementById('slider-soil-n'),
         sliderSoilP: document.getElementById('slider-soil-p'),
         sliderSoilK: document.getElementById('slider-soil-k'),
@@ -1046,22 +1259,42 @@
         valSoilP: document.getElementById('val-soil-p'),
         valSoilK: document.getElementById('val-soil-k'),
         valSoilPh: document.getElementById('val-soil-ph'),
-        statusNText: document.getElementById('status-n-text'),
-        statusPText: document.getElementById('status-p-text'),
-        statusKText: document.getElementById('status-k-text'),
-        badgeNBox: document.getElementById('badge-n-box'),
-        badgePBox: document.getElementById('badge-p-box'),
-        badgeKBox: document.getElementById('badge-k-box'),
-        fertUreaDose: document.getElementById('fert-urea-dose'),
-        fertUreaDesc: document.getElementById('fert-urea-desc'),
-        fertDapDose: document.getElementById('fert-dap-dose'),
-        fertDapDesc: document.getElementById('fert-dap-desc'),
-        fertMopDose: document.getElementById('fert-mop-dose'),
-        fertMopDesc: document.getElementById('fert-mop-desc'),
-        amendmentTitle: document.getElementById('amendment-title'),
-        amendmentStatus: document.getElementById('amendment-status'),
-        amendmentDesc: document.getElementById('amendment-desc'),
-        soilAmendmentCard: document.getElementById('soil-amendment-card'),
+
+        // Soil Card Diagnostics Display
+        soilCardPlotBadge: document.getElementById('soil-card-plot-badge'),
+        soilGradeBadge: document.getElementById('soil-grade-badge'),
+        soilCardLabSubtitle: document.getElementById('soil-card-lab-subtitle'),
+        soilTargetCropName: document.getElementById('soil-target-crop-name'),
+        soilCalcTargetCrop: document.getElementById('soil-calc-target-crop'),
+        cardMetricN: document.getElementById('card-metric-n'),
+        cardStatusN: document.getElementById('card-status-n'),
+        cardMetricP: document.getElementById('card-metric-p'),
+        cardStatusP: document.getElementById('card-status-p'),
+        cardMetricK: document.getElementById('card-metric-k'),
+        cardStatusK: document.getElementById('card-status-k'),
+        cardMetricPh: document.getElementById('card-metric-ph'),
+        cardStatusPh: document.getElementById('card-status-ph'),
+        cardMetricOc: document.getElementById('card-metric-oc'),
+        cardStatusOc: document.getElementById('card-status-oc'),
+        cardMetricZn: document.getElementById('card-metric-zn'),
+        cardStatusZn: document.getElementById('card-status-zn'),
+
+        // Fertilizer Calculations
+        calcUreaBags: document.getElementById('calc-urea-bags'),
+        calcUreaQty: document.getElementById('calc-urea-qty'),
+        calcUreaSchedule: document.getElementById('calc-urea-schedule'),
+        calcDapBags: document.getElementById('calc-dap-bags'),
+        calcDapQty: document.getElementById('calc-dap-qty'),
+        calcDapSchedule: document.getElementById('calc-dap-schedule'),
+        calcMopBags: document.getElementById('calc-mop-bags'),
+        calcMopQty: document.getElementById('calc-mop-qty'),
+        calcMopSchedule: document.getElementById('calc-mop-schedule'),
+        soilBioRec: document.getElementById('soil-bio-rec'),
+        soilMicroRec: document.getElementById('soil-micro-rec'),
+
+        // Saved Reports
+        savedReportsCount: document.getElementById('saved-reports-count'),
+        savedReportsGrid: document.getElementById('saved-reports-grid'),
 
         // Tasks
         tasksListContainer: document.getElementById('tasks-list-container'),
@@ -1092,6 +1325,9 @@
           idealMoistMax: 85,
           idealPhMin: 6.0,
           idealPhMax: 7.2,
+          baseN: 50,
+          baseP: 25,
+          baseK: 25,
           stages: {
             seedling: {
               en: "Nursery / Seedling",
@@ -1135,6 +1371,9 @@
           idealMoistMax: 65,
           idealPhMin: 6.5,
           idealPhMax: 8.0,
+          baseN: 45,
+          baseP: 20,
+          baseK: 20,
           stages: {
             seedling: {
               en: "Emergence & Square Formation",
@@ -1178,6 +1417,9 @@
           idealMoistMax: 85,
           idealPhMin: 6.5,
           idealPhMax: 7.8,
+          baseN: 110,
+          baseP: 35,
+          baseK: 60,
           stages: {
             seedling: {
               en: "Germination & Tillering",
@@ -1221,6 +1463,9 @@
           idealMoistMax: 60,
           idealPhMin: 5.5,
           idealPhMax: 7.5,
+          baseN: 30,
+          baseP: 15,
+          baseK: 15,
           stages: {
             seedling: {
               en: "Nursery / Tillering",
@@ -1264,6 +1509,9 @@
           idealMoistMax: 75,
           idealPhMin: 5.5,
           idealPhMax: 8.0,
+          baseN: 60,
+          baseP: 30,
+          baseK: 70,
           stages: {
             seedling: {
               en: "Young Palm Establishment",
@@ -1307,6 +1555,9 @@
           idealMoistMax: 65,
           idealPhMin: 6.0,
           idealPhMax: 7.5,
+          baseN: 20,
+          baseP: 30,
+          baseK: 35,
           stages: {
             seedling: {
               en: "Germination & Vegetative",
@@ -1337,7 +1588,72 @@
       };
 
       // -------------------------------------------------------------
-      // 3. APPLICATION STATE
+      // 3. SAMPLE SOIL TEST REPORTS
+      // -------------------------------------------------------------
+      const SAMPLE_REPORTS = {
+        tnau_delta: `Farmer: Karthik Sundaram
+Location: Aduthurai, Thanjavur District (Cauvery Delta)
+Laboratory: TNAU Soil Testing Laboratory, Aduthurai
+Date: 15-August-2026
+Soil Texture: Clayey Alluvial Loam
+Soil pH: 6.8 (Neutral)
+Electrical Conductivity (EC): 0.42 dS/m (Normal)
+Organic Carbon (OC): 0.54% (Medium)
+Available Nitrogen (N): 260 kg/ha (Low Deficient)
+Available Phosphorus (P): 18.5 kg/ha (Medium Optimal)
+Available Potassium (K): 225 kg/ha (Medium Optimal)
+Available Zinc (Zn): 0.72 ppm (Deficient < 0.8)
+Available Iron (Fe): 5.4 ppm (Sufficient)
+Available Boron (B): 0.55 ppm (Adequate)`,
+
+        tnau_black: `Farmer: Murugan Palanisamy
+Location: Palladam, Tiruppur / Coimbatore District
+Laboratory: TNAU Soil Health Center, Coimbatore
+Date: 22-July-2026
+Soil Texture: Deep Black Cotton Soil (Vertisol)
+Soil pH: 7.9 (Slightly Alkaline)
+Electrical Conductivity (EC): 0.68 dS/m (Normal)
+Organic Carbon (OC): 0.38% (Low)
+Available Nitrogen (N): 195 kg/ha (Very Low)
+Available Phosphorus (P): 13.0 kg/ha (Low-Medium)
+Available Potassium (K): 340 kg/ha (High Rich)
+Available Zinc (Zn): 0.65 ppm (Deficient)
+Available Iron (Fe): 3.8 ppm (Moderate)
+Available Boron (B): 0.48 ppm (Adequate)`,
+
+        tnau_red: `Farmer: Velusamy Thevar
+Location: Melur, Madurai District
+Laboratory: Regional Agricultural Research Station, Madurai
+Date: 10-August-2026
+Soil Texture: Red Sandy Loam (Alfisol)
+Soil pH: 6.1 (Slightly Acidic)
+Electrical Conductivity (EC): 0.25 dS/m (Low)
+Organic Carbon (OC): 0.42% (Low)
+Available Nitrogen (N): 180 kg/ha (Low Deficient)
+Available Phosphorus (P): 9.2 kg/ha (Deficient)
+Available Potassium (K): 135 kg/ha (Low Deficient)
+Available Zinc (Zn): 0.58 ppm (Deficient)
+Available Iron (Fe): 7.2 ppm (Rich)
+Available Boron (B): 0.35 ppm (Low)`,
+
+        tnau_alkaline: `Farmer: Ramanathan Chettiar
+Location: Sirkali, Nagapattinam Coastal Belt
+Laboratory: Soil Salinity & Water Testing Center, Sirkali
+Date: 04-August-2026
+Soil Texture: Coastal Saline Alluvium
+Soil pH: 8.6 (Strongly Alkaline / Sodic)
+Electrical Conductivity (EC): 2.45 dS/m (Saline Critical)
+Organic Carbon (OC): 0.31% (Very Low)
+Available Nitrogen (N): 165 kg/ha (Deficient)
+Available Phosphorus (P): 11.5 kg/ha (Low)
+Available Potassium (K): 280 kg/ha (High)
+Available Zinc (Zn): 0.45 ppm (Severely Deficient)
+Available Iron (Fe): 2.1 ppm (Deficient)
+Available Boron (B): 0.95 ppm (High)`
+      };
+
+      // -------------------------------------------------------------
+      // 4. APPLICATION STATE
       // -------------------------------------------------------------
       const state = {
         crop: 'rice',
@@ -1346,13 +1662,49 @@
         moist: 65,
         humid: 60,
         ph: 6.5,
-        soilN: 240,
-        soilP: 16,
-        soilK: 190,
-        soilPh: 6.5,
+        soilMode: 'adder', // 'adder' | 'sliders'
+        soilN: 260,
+        soilP: 18.5,
+        soilK: 225,
+        soilPh: 6.8,
+        soilEc: 0.42,
+        soilOc: 0.54,
+        soilZn: 0.72,
+        soilFe: 5.4,
+        soilPlot: "Karthik - Cauvery Delta Plot 4",
+        soilLab: "TNAU Soil Testing Laboratory, Aduthurai",
         activeTab: 'advisory',
         isDark: false,
         chartInstance: null,
+        savedSoilReports: [
+          {
+            id: 1,
+            plot: "Kaveri Delta - Plot 4 (Rice)",
+            lab: "TNAU Aduthurai",
+            date: "15 Aug 2026",
+            n: 260, p: 18.5, k: 225, ph: 6.8, oc: 0.54, zn: 0.72,
+            grade: "GRADE B+",
+            crop: "rice"
+          },
+          {
+            id: 2,
+            plot: "Coimbatore Black Soil - Cotton Plot",
+            lab: "TNAU Coimbatore",
+            date: "22 Jul 2026",
+            n: 195, p: 13.0, k: 340, ph: 7.9, oc: 0.38, zn: 0.65,
+            grade: "GRADE B",
+            crop: "cotton"
+          },
+          {
+            id: 3,
+            plot: "Madurai Red Loam - Groundnut Block",
+            lab: "RARS Madurai",
+            date: "10 Aug 2026",
+            n: 180, p: 9.2, k: 135, ph: 6.1, oc: 0.42, zn: 0.58,
+            grade: "GRADE C",
+            crop: "groundnut"
+          }
+        ],
         tasks: [
           { id: 1, text: "Check water drainage channels before evening / வடிகால் வாய்க்கால்களை சரிபார்க்கவும்", completed: true },
           { id: 2, text: "Scout field corners for early stem borer or leaf folder moths / இலைசுருட்டு புழு தாக்குதலை கண்காணிக்கவும்", completed: true },
@@ -1363,18 +1715,22 @@
       };
 
       // -------------------------------------------------------------
-      // 4. CORE ENGINE FUNCTIONS
+      // 5. CORE ENGINE FUNCTIONS
       // -------------------------------------------------------------
-
       function init() {
         setupEventListeners();
         loadSavedTheme();
         loadSavedTasks();
+        loadSavedSoilReportsFromStorage();
         startClock();
         updateCropUI();
         updateSimulationUI();
         updateAdvisoryFeed();
-        updateSoilLabUI();
+        
+        // Initial sample text in Soil Report Adder
+        dom.soilRawText.value = SAMPLE_REPORTS.tnau_delta;
+        analyzeCurrentSoilReport();
+        renderSavedSoilReports();
         renderTasks();
       }
 
@@ -1403,6 +1759,7 @@
           state.crop = e.target.value;
           updateCropUI();
           updateAdvisoryFeed();
+          calculateAndRenderSoilPrescription();
           if (state.activeTab === 'analytics') updateChart();
         });
 
@@ -1449,25 +1806,25 @@
         dom.sliderSoilN.addEventListener('input', (e) => {
           state.soilN = parseInt(e.target.value, 10);
           dom.valSoilN.textContent = `${state.soilN} kg/ha`;
-          updateSoilLabUI();
+          calculateAndRenderSoilPrescription();
         });
 
         dom.sliderSoilP.addEventListener('input', (e) => {
-          state.soilP = parseInt(e.target.value, 10);
+          state.soilP = parseFloat(e.target.value);
           dom.valSoilP.textContent = `${state.soilP} kg/ha`;
-          updateSoilLabUI();
+          calculateAndRenderSoilPrescription();
         });
 
         dom.sliderSoilK.addEventListener('input', (e) => {
           state.soilK = parseInt(e.target.value, 10);
           dom.valSoilK.textContent = `${state.soilK} kg/ha`;
-          updateSoilLabUI();
+          calculateAndRenderSoilPrescription();
         });
 
         dom.sliderSoilPh.addEventListener('input', (e) => {
           state.soilPh = parseFloat(e.target.value);
           dom.valSoilPh.textContent = state.soilPh.toFixed(1);
-          updateSoilLabUI();
+          calculateAndRenderSoilPrescription();
         });
       }
 
@@ -1544,10 +1901,394 @@
         dom.analyticsHeatDesc.textContent = crop.heatDesc;
         dom.analyticsDuration.textContent = crop.duration;
         dom.analyticsDurationDesc.textContent = crop.durationDesc;
+
+        // Soil Card crop label
+        dom.soilTargetCropName.textContent = `${crop.nameEn} (${crop.nameTa})`;
+        dom.soilCalcTargetCrop.textContent = `${crop.nameEn}`;
       }
 
       // -------------------------------------------------------------
-      // 5. ADVISORY & RULE EVALUATION ENGINE
+      // 6. SOIL REPORT ADDER & SCIENTIFIC ANALYZER ENGINE
+      // -------------------------------------------------------------
+      function switchSoilMode(mode) {
+        state.soilMode = mode;
+        if (mode === 'adder') {
+          dom.soilSectionAdder.classList.remove('hidden');
+          dom.soilSectionSliders.classList.add('hidden');
+          dom.btnModeAdder.className = "px-4 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-sm transition-all";
+          dom.btnModeSliders.className = "px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all";
+        } else {
+          dom.soilSectionAdder.classList.add('hidden');
+          dom.soilSectionSliders.classList.remove('hidden');
+          dom.btnModeSliders.className = "px-4 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-sm transition-all";
+          dom.btnModeAdder.className = "px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all";
+        }
+      }
+
+      function loadSampleSoilReport(sampleKey) {
+        if (SAMPLE_REPORTS[sampleKey]) {
+          dom.soilRawText.value = SAMPLE_REPORTS[sampleKey];
+          if (sampleKey === 'tnau_delta') {
+            dom.soilPlotName.value = "Karthik - Cauvery Delta Plot 4";
+            dom.soilTestingLab.value = "TNAU Soil Testing Laboratory, Aduthurai";
+          } else if (sampleKey === 'tnau_black') {
+            dom.soilPlotName.value = "Murugan - Tiruppur Cotton Field";
+            dom.soilTestingLab.value = "TNAU Soil Health Center, Coimbatore";
+          } else if (sampleKey === 'tnau_red') {
+            dom.soilPlotName.value = "Velusamy - Melur Groundnut Field";
+            dom.soilTestingLab.value = "RARS Soil Lab, Madurai";
+          } else if (sampleKey === 'tnau_alkaline') {
+            dom.soilPlotName.value = "Ramanathan - Sirkali Coastal Plot";
+            dom.soilTestingLab.value = "Soil Salinity Testing Center, Sirkali";
+          }
+          analyzeCurrentSoilReport();
+          showSoilToast("Sample report loaded & analyzed!");
+        }
+      }
+
+      function handleSoilFileUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const content = e.target.result;
+          dom.soilRawText.value = content;
+          dom.soilPlotName.value = file.name.replace(/\.[^/.]+$/, "");
+          analyzeCurrentSoilReport();
+          showSoilToast(`Uploaded & Parsed "${file.name}"!`);
+        };
+        reader.readAsText(file);
+      }
+
+      function analyzeCurrentSoilReport() {
+        const raw = dom.soilRawText.value;
+        state.soilPlot = dom.soilPlotName.value.trim() || "Farm Plot 1";
+        state.soilLab = dom.soilTestingLab.value.trim() || "TNAU Certified Lab";
+
+        // Regex parsing for parameters
+        const parseNum = (pattern, fallback) => {
+          const match = raw.match(pattern);
+          if (match && match[1]) {
+            const val = parseFloat(match[1]);
+            return isNaN(val) ? fallback : val;
+          }
+          return fallback;
+        };
+
+        // Extract N, P, K, pH, EC, OC, Zn
+        state.soilN = parseNum(/(?:Nitrogen|Available N|N)\s*[:=]?\s*([0-9.]+)/i, state.soilN);
+        state.soilP = parseNum(/(?:Phosphorus|Available P|P2O5|P)\s*[:=]?\s*([0-9.]+)/i, state.soilP);
+        state.soilK = parseNum(/(?:Potassium|Available K|K2O|K)\s*[:=]?\s*([0-9.]+)/i, state.soilK);
+        state.soilPh = parseNum(/(?:Soil pH|pH)\s*[:=]?\s*([0-9.]+)/i, state.soilPh);
+        state.soilEc = parseNum(/(?:Electrical Conductivity|EC)\s*[:=]?\s*([0-9.]+)/i, 0.45);
+        state.soilOc = parseNum(/(?:Organic Carbon|OC)\s*[:=]?\s*([0-9.]+)/i, 0.50);
+        state.soilZn = parseNum(/(?:Zinc|Zn)\s*[:=]?\s*([0-9.]+)/i, 0.75);
+
+        // Sync slider values
+        dom.sliderSoilN.value = state.soilN;
+        dom.sliderSoilP.value = state.soilP;
+        dom.sliderSoilK.value = state.soilK;
+        dom.sliderSoilPh.value = state.soilPh;
+        dom.valSoilN.textContent = `${Math.round(state.soilN)} kg/ha`;
+        dom.valSoilP.textContent = `${state.soilP.toFixed(1)} kg/ha`;
+        dom.valSoilK.textContent = `${Math.round(state.soilK)} kg/ha`;
+        dom.valSoilPh.textContent = state.soilPh.toFixed(1);
+
+        calculateAndRenderSoilPrescription();
+        showSoilToast("Soil report parsed & recommendations generated!");
+      }
+
+      function calculateAndRenderSoilPrescription() {
+        const crop = CROP_DATA[state.crop];
+
+        // Update titles
+        dom.soilCardPlotBadge.textContent = state.soilPlot;
+        dom.soilCardLabSubtitle.innerHTML = `Tested by: ${state.soilLab} • Target Crop: <strong class="text-emerald-600 dark:text-emerald-400">${crop.nameEn}</strong>`;
+        dom.soilTargetCropName.textContent = `${crop.nameEn} (${crop.nameTa})`;
+        dom.soilCalcTargetCrop.textContent = `${crop.nameEn}`;
+
+        // 1. Metric Values Display
+        dom.cardMetricN.textContent = `${Math.round(state.soilN)} kg/ha`;
+        dom.cardMetricP.textContent = `${state.soilP.toFixed(1)} kg/ha`;
+        dom.cardMetricK.textContent = `${Math.round(state.soilK)} kg/ha`;
+        dom.cardMetricPh.textContent = state.soilPh.toFixed(1);
+        dom.cardMetricOc.textContent = `${state.soilOc.toFixed(2)} %`;
+        dom.cardMetricZn.textContent = `${state.soilZn.toFixed(2)} ppm`;
+
+        // 2. Status Badges & Deficit Math
+        // Nitrogen Status (< 280 Low, 280-450 Medium, > 450 High)
+        let nFactor = 1.0;
+        if (state.soilN < 280) {
+          dom.cardStatusN.textContent = "LOW (குறைவு)";
+          dom.cardStatusN.className = "inline-block text-[10px] font-bold text-amber-600 mt-0.5";
+          nFactor = 1.25;
+        } else if (state.soilN > 450) {
+          dom.cardStatusN.textContent = "HIGH (அதிகம்)";
+          dom.cardStatusN.className = "inline-block text-[10px] font-bold text-sky-600 mt-0.5";
+          nFactor = 0.75;
+        } else {
+          dom.cardStatusN.textContent = "OPTIMAL (மிதமானது)";
+          dom.cardStatusN.className = "inline-block text-[10px] font-bold text-emerald-600 mt-0.5";
+          nFactor = 1.0;
+        }
+
+        // Phosphorus Status (< 11 Low, 11-22 Medium, > 22 High)
+        let pFactor = 1.0;
+        if (state.soilP < 11) {
+          dom.cardStatusP.textContent = "DEFICIENT (குறைவு)";
+          dom.cardStatusP.className = "inline-block text-[10px] font-bold text-amber-600 mt-0.5";
+          pFactor = 1.30;
+        } else if (state.soilP > 22) {
+          dom.cardStatusP.textContent = "RICH (அதிகம்)";
+          dom.cardStatusP.className = "inline-block text-[10px] font-bold text-sky-600 mt-0.5";
+          pFactor = 0.70;
+        } else {
+          dom.cardStatusP.textContent = "OPTIMAL (மிதமானது)";
+          dom.cardStatusP.className = "inline-block text-[10px] font-bold text-emerald-600 mt-0.5";
+          pFactor = 1.0;
+        }
+
+        // Potassium Status (< 140 Low, 140-280 Medium, > 280 High)
+        let kFactor = 1.0;
+        if (state.soilK < 140) {
+          dom.cardStatusK.textContent = "DEFICIENT (குறைவு)";
+          dom.cardStatusK.className = "inline-block text-[10px] font-bold text-amber-600 mt-0.5";
+          kFactor = 1.25;
+        } else if (state.soilK > 280) {
+          dom.cardStatusK.textContent = "RICH (அதிகம்)";
+          dom.cardStatusK.className = "inline-block text-[10px] font-bold text-sky-600 mt-0.5";
+          kFactor = 0.65;
+        } else {
+          dom.cardStatusK.textContent = "OPTIMAL (மிதமானது)";
+          dom.cardStatusK.className = "inline-block text-[10px] font-bold text-emerald-600 mt-0.5";
+          kFactor = 1.0;
+        }
+
+        // pH Status
+        if (state.soilPh < 6.0) {
+          dom.cardStatusPh.textContent = "ACIDIC (அமிலம்)";
+          dom.cardStatusPh.className = "inline-block text-[10px] font-bold text-amber-600 mt-0.5";
+        } else if (state.soilPh > 8.0) {
+          dom.cardStatusPh.textContent = "ALKALINE (காரத்தன்மை)";
+          dom.cardStatusPh.className = "inline-block text-[10px] font-bold text-rose-600 mt-0.5";
+        } else {
+          dom.cardStatusPh.textContent = "NEUTRAL (ஏற்றது)";
+          dom.cardStatusPh.className = "inline-block text-[10px] font-bold text-emerald-600 mt-0.5";
+        }
+
+        // Organic Carbon Status
+        if (state.soilOc < 0.50) {
+          dom.cardStatusOc.textContent = "LOW (குறைவு)";
+          dom.cardStatusOc.className = "inline-block text-[10px] font-bold text-amber-600 mt-0.5";
+        } else if (state.soilOc > 0.75) {
+          dom.cardStatusOc.textContent = "HIGH (நன்று)";
+          dom.cardStatusOc.className = "inline-block text-[10px] font-bold text-emerald-600 mt-0.5";
+        } else {
+          dom.cardStatusOc.textContent = "MEDIUM (மிதம்)";
+          dom.cardStatusOc.className = "inline-block text-[10px] font-bold text-slate-600 mt-0.5";
+        }
+
+        // Zinc Status
+        if (state.soilZn < 0.8) {
+          dom.cardStatusZn.textContent = "DEFICIENT (குறைவு)";
+          dom.cardStatusZn.className = "inline-block text-[10px] font-bold text-rose-600 mt-0.5";
+        } else {
+          dom.cardStatusZn.textContent = "ADEQUATE (போதும்)";
+          dom.cardStatusZn.className = "inline-block text-[10px] font-bold text-emerald-600 mt-0.5";
+        }
+
+        // 3. Overall Fertility Grade
+        let fertilityScore = 100;
+        if (state.soilN < 280) fertilityScore -= 15;
+        if (state.soilP < 11) fertilityScore -= 15;
+        if (state.soilK < 140) fertilityScore -= 10;
+        if (state.soilPh < 6.0 || state.soilPh > 8.0) fertilityScore -= 20;
+        if (state.soilOc < 0.5) fertilityScore -= 10;
+        if (state.soilZn < 0.8) fertilityScore -= 10;
+
+        if (fertilityScore >= 85) {
+          dom.soilGradeBadge.textContent = "GRADE A (Highly Fertile / அதிக வளமுள்ள மண்)";
+          dom.soilGradeBadge.className = "px-3 py-0.5 rounded-full text-xs font-extrabold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800";
+        } else if (fertilityScore >= 65) {
+          dom.soilGradeBadge.textContent = "GRADE B+ (Moderately Fertile / மிதமான வளமுள்ள மண்)";
+          dom.soilGradeBadge.className = "px-3 py-0.5 rounded-full text-xs font-extrabold bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300 border border-sky-300 dark:border-sky-800";
+        } else if (fertilityScore >= 45) {
+          dom.soilGradeBadge.textContent = "GRADE C (Nutrient Deficient / ஊட்டச்சத்து குறைபாடுள்ள மண்)";
+          dom.soilGradeBadge.className = "px-3 py-0.5 rounded-full text-xs font-extrabold bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-800";
+        } else {
+          dom.soilGradeBadge.textContent = "GRADE D (Problem Soil / சீர்திருத்தப்பட வேண்டிய மண்)";
+          dom.soilGradeBadge.className = "px-3 py-0.5 rounded-full text-xs font-extrabold bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-800";
+        }
+
+        // 4. Crop-Specific Fertilizer Calculations (per acre)
+        // 1 bag = 50 kg (45 kg for Urea)
+        const calcUrea = Math.round(crop.baseN * nFactor * 1.1);
+        const calcDap = Math.round(crop.baseP * pFactor * 1.2);
+        const calcMop = Math.round(crop.baseK * kFactor * 1.15);
+
+        const ureaBags = (calcUrea / 45).toFixed(1);
+        const dapBags = (calcDap / 50).toFixed(1);
+        const mopBags = (calcMop / 50).toFixed(1);
+
+        dom.calcUreaQty.textContent = `${calcUrea} kg / acre`;
+        dom.calcUreaBags.textContent = `${ureaBags} Bags (45kg)`;
+        dom.calcUreaSchedule.textContent = `Apply in 3 splits: ${Math.round(calcUrea * 0.35)} kg as basal, ${Math.round(calcUrea * 0.35)} kg at vegetative peak, and ${Math.round(calcUrea * 0.30)} kg at panicle/flowering.`;
+
+        dom.calcDapQty.textContent = `${calcDap} kg / acre`;
+        dom.calcDapBags.textContent = `${dapBags} Bags (50kg)`;
+        dom.calcDapSchedule.textContent = `Apply full 100% quantity (${calcDap} kg) as basal dressing prior to planting to maximize early root proliferation.`;
+
+        dom.calcMopQty.textContent = `${calcMop} kg / acre`;
+        dom.calcMopBags.textContent = `${mopBags} Bags (50kg)`;
+        dom.calcMopSchedule.textContent = `Apply in 2 equal splits (${Math.round(calcMop * 0.5)} kg basal, ${Math.round(calcMop * 0.5)} kg at panicle emergence) for grain filling & lodging resistance.`;
+
+        // 5. Biofertilizer & Micronutrient Plan
+        if (state.soilOc < 0.5) {
+          dom.soilBioRec.textContent = "Soil Organic Carbon is deficient (< 0.5%). Apply 6-8 tonnes Farm Yard Manure (FYM) or 2.5 tonnes Vermicompost. Inoculate with Azospirillum (2 kg/acre) & Phosphobacteria (2 kg/acre) to activate beneficial microbial flora.";
+        } else {
+          dom.soilBioRec.textContent = "Organic Carbon is adequate. Maintain fertility with 4 tonnes compost per acre. Mix bio-fertilizers (Azospirillum + Phosphobacteria @ 2kg/acre) with seed bed or root dip.";
+        }
+
+        if (state.soilZn < 0.8) {
+          dom.soilMicroRec.innerHTML = `<span class="font-bold text-rose-600 dark:text-rose-400">Zinc Deficiency Detected:</span> Apply 10-12 kg Zinc Sulphate (ZnSO4) per acre as basal soil application. Do NOT mix Zinc Sulphate directly with DAP or Superphosphate in the same bucket to prevent chemical fixation.`;
+        } else if (state.soilPh > 8.0) {
+          dom.soilMicroRec.innerHTML = `<span class="font-bold text-rose-600 dark:text-rose-400">Alkalinity Alert:</span> Apply 250 kg Gypsum/acre and incorporate green manure (Daincha/தக்கைப்பூண்டு) to wash down sodium salts.`;
+        } else if (state.soilPh < 6.0) {
+          dom.soilMicroRec.innerHTML = `<span class="font-bold text-amber-600 dark:text-amber-400">Acidity Alert:</span> Apply 200 kg agricultural lime per acre to neutralize acidity and liberate fixed phosphorus.`;
+        } else {
+          dom.soilMicroRec.textContent = "Micronutrient profile is well balanced. Apply TNAU Crop-Specific Micronutrient Mixture at 5 kg/acre mixed with well-decomposed FYM for sustained health.";
+        }
+      }
+
+      function saveSoilReportToHistory() {
+        const newReport = {
+          id: Date.now(),
+          plot: state.soilPlot,
+          lab: state.soilLab,
+          date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+          n: state.soilN,
+          p: state.soilP,
+          k: state.soilK,
+          ph: state.soilPh,
+          oc: state.soilOc,
+          zn: state.soilZn,
+          grade: dom.soilGradeBadge.textContent.split('(')[0].trim(),
+          crop: state.crop
+        };
+
+        state.savedSoilReports.unshift(newReport);
+        saveSoilReportsToStorage();
+        renderSavedSoilReports();
+        showSoilToast(`Report "${newReport.plot}" saved to history!`);
+      }
+
+      function renderSavedSoilReports() {
+        dom.savedReportsGrid.innerHTML = '';
+        dom.savedReportsCount.textContent = `${state.savedSoilReports.length} Saved Reports / சேமிக்கப்பட்டவை`;
+
+        state.savedSoilReports.forEach((rep) => {
+          const card = document.createElement('div');
+          card.className = "p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700/70 space-y-3 hover:border-emerald-400 transition-all flex flex-col justify-between";
+          card.innerHTML = `
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-1.5">
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">
+                  ${rep.crop ? rep.crop.toUpperCase() : 'CROP'}
+                </span>
+                <span class="text-[11px] text-slate-400 font-medium">${rep.date}</span>
+              </div>
+              <h4 class="text-sm font-bold text-slate-900 dark:text-white leading-tight">
+                ${rep.plot}
+              </h4>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">${rep.lab}</p>
+              
+              <div class="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-slate-200/60 dark:border-slate-700/60 text-center text-[11px]">
+                <div><span class="text-slate-400">N:</span> <strong>${Math.round(rep.n)}</strong></div>
+                <div><span class="text-slate-400">P:</span> <strong>${rep.p.toFixed(1)}</strong></div>
+                <div><span class="text-slate-400">K:</span> <strong>${Math.round(rep.k)}</strong></div>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between pt-3 border-t border-slate-200/60 dark:border-slate-700/60">
+              <button onclick="app.loadSavedSoilReport(${rep.id})" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 flex items-center gap-1">
+                <i class="fa-solid fa-arrow-rotate-left"></i> Load Report
+              </button>
+              <button onclick="app.deleteSavedSoilReport(${rep.id})" class="text-slate-400 hover:text-rose-500 transition-colors p-1" title="Delete">
+                <i class="fa-regular fa-trash-can text-sm"></i>
+              </button>
+            </div>
+          `;
+          dom.savedReportsGrid.appendChild(card);
+        });
+      }
+
+      function loadSavedSoilReport(id) {
+        const rep = state.savedSoilReports.find(x => x.id === id);
+        if (!rep) return;
+
+        state.soilPlot = rep.plot;
+        state.soilLab = rep.lab;
+        state.soilN = rep.n;
+        state.soilP = rep.p;
+        state.soilK = rep.k;
+        state.soilPh = rep.ph;
+        state.soilOc = rep.oc || 0.5;
+        state.soilZn = rep.zn || 0.75;
+        if (rep.crop && CROP_DATA[rep.crop]) {
+          state.crop = rep.crop;
+          dom.cropSelector.value = rep.crop;
+          updateCropUI();
+        }
+
+        dom.soilPlotName.value = rep.plot;
+        dom.soilTestingLab.value = rep.lab;
+        dom.sliderSoilN.value = rep.n;
+        dom.sliderSoilP.value = rep.p;
+        dom.sliderSoilK.value = rep.k;
+        dom.sliderSoilPh.value = rep.ph;
+
+        calculateAndRenderSoilPrescription();
+        showSoilToast(`Loaded "${rep.plot}" into Analyzer!`);
+      }
+
+      function deleteSavedSoilReport(id) {
+        state.savedSoilReports = state.savedSoilReports.filter(x => x.id !== id);
+        saveSoilReportsToStorage();
+        renderSavedSoilReports();
+        showSoilToast("Report removed from history.");
+      }
+
+      function saveSoilReportsToStorage() {
+        try {
+          localStorage.setItem('agrihelp_soil_reports', JSON.stringify(state.savedSoilReports));
+        } catch (e) {
+          console.warn("Storage save error", e);
+        }
+      }
+
+      function loadSavedSoilReportsFromStorage() {
+        try {
+          const raw = localStorage.getItem('agrihelp_soil_reports');
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              state.savedSoilReports = parsed;
+            }
+          }
+        } catch (e) {
+          console.warn("Storage load error", e);
+        }
+      }
+
+      function showSoilToast(msg) {
+        dom.soilStatusToastText.textContent = msg;
+        dom.soilStatusToast.classList.remove('hidden');
+        setTimeout(() => dom.soilStatusToast.classList.add('hidden'), 3500);
+      }
+
+      // -------------------------------------------------------------
+      // 7. ADVISORY & RULE EVALUATION ENGINE
       // -------------------------------------------------------------
       function updateAdvisoryFeed() {
         const crop = CROP_DATA[state.crop];
@@ -1807,131 +2548,7 @@
       }
 
       // -------------------------------------------------------------
-      // 6. SOIL LAB & FERTILIZER CALCULATION
-      // -------------------------------------------------------------
-      function updateSoilLabUI() {
-        dom.valSoilN.textContent = `${state.soilN} kg/ha`;
-        dom.valSoilP.textContent = `${state.soilP} kg/ha`;
-        dom.valSoilK.textContent = `${state.soilK} kg/ha`;
-        dom.valSoilPh.textContent = state.soilPh.toFixed(1);
-
-        // Nitrogen evaluation
-        if (state.soilN < 280) {
-          dom.statusNText.textContent = "DEFICIENT (குறைவு)";
-          dom.statusNText.className = "text-sm font-extrabold text-amber-600 dark:text-amber-400";
-          dom.badgeNBox.className = "p-3.5 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/50 text-center";
-          dom.fertUreaDose.textContent = "65 kg / acre";
-          dom.fertUreaDesc.textContent = "Nitrogen is low (< 280 kg/ha). Apply 65 kg Urea in 3 splits (basal, tillering, panicle initiation).";
-        } else if (state.soilN > 450) {
-          dom.statusNText.textContent = "HIGH (அதிகம்)";
-          dom.statusNText.className = "text-sm font-extrabold text-sky-600 dark:text-sky-400";
-          dom.badgeNBox.className = "p-3.5 rounded-2xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800/50 text-center";
-          dom.fertUreaDose.textContent = "30 kg / acre";
-          dom.fertUreaDesc.textContent = "Nitrogen is rich (> 450 kg/ha). Reduce urea to avoid lodging and sheath blight.";
-        } else {
-          dom.statusNText.textContent = "OPTIMAL (மிதமானது)";
-          dom.statusNText.className = "text-sm font-extrabold text-emerald-600 dark:text-emerald-400";
-          dom.badgeNBox.className = "p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/50 text-center";
-          dom.fertUreaDose.textContent = "50 kg / acre";
-          dom.fertUreaDesc.textContent = "Standard maintenance dose. Apply with organic manure.";
-        }
-
-        // Phosphorus evaluation
-        if (state.soilP < 11) {
-          dom.statusPText.textContent = "DEFICIENT (குறைவு)";
-          dom.statusPText.className = "text-sm font-extrabold text-amber-600 dark:text-amber-400";
-          dom.badgePBox.className = "p-3.5 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/50 text-center";
-          dom.fertDapDose.textContent = "45 kg / acre";
-          dom.fertDapDesc.textContent = "Phosphorus is low. Apply 45 kg DAP or 120 kg Single Super Phosphate (SSP) at final plowing.";
-        } else if (state.soilP > 22) {
-          dom.statusPText.textContent = "HIGH (அதிகம்)";
-          dom.statusPText.className = "text-sm font-extrabold text-sky-600 dark:text-sky-400";
-          dom.badgePBox.className = "p-3.5 rounded-2xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800/50 text-center";
-          dom.fertDapDose.textContent = "20 kg / acre";
-          dom.fertDapDesc.textContent = "Soil is well supplied with phosphorus. Minimal basal dose sufficient.";
-        } else {
-          dom.statusPText.textContent = "OPTIMAL (மிதமானது)";
-          dom.statusPText.className = "text-sm font-extrabold text-emerald-600 dark:text-emerald-400";
-          dom.badgePBox.className = "p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/50 text-center";
-          dom.fertDapDose.textContent = "30 kg / acre";
-          dom.fertDapDesc.textContent = "Standard basal DAP dose. Inoculate with Phosphobacteria for enhanced availability.";
-        }
-
-        // Potassium evaluation
-        if (state.soilK < 140) {
-          dom.statusKText.textContent = "DEFICIENT (குறைவு)";
-          dom.statusKText.className = "text-sm font-extrabold text-amber-600 dark:text-amber-400";
-          dom.badgeKBox.className = "p-3.5 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/50 text-center";
-          dom.fertMopDose.textContent = "35 kg / acre";
-          dom.fertMopDesc.textContent = "Potassium is low. Apply MOP in 2 splits to prevent stem breakage and promote grain weight.";
-        } else if (state.soilK > 280) {
-          dom.statusKText.textContent = "HIGH (அதிகம்)";
-          dom.statusKText.className = "text-sm font-extrabold text-sky-600 dark:text-sky-400";
-          dom.badgeKBox.className = "p-3.5 rounded-2xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800/50 text-center";
-          dom.fertMopDose.textContent = "15 kg / acre";
-          dom.fertMopDesc.textContent = "Adequate potassium in soil. Low maintenance dose recommended.";
-        } else {
-          dom.statusKText.textContent = "OPTIMAL (மிதமானது)";
-          dom.statusKText.className = "text-sm font-extrabold text-emerald-600 dark:text-emerald-400";
-          dom.badgeKBox.className = "p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/50 text-center";
-          dom.fertMopDose.textContent = "25 kg / acre";
-          dom.fertMopDesc.textContent = "Apply in 2 splits at tillering and panicle emergence.";
-        }
-
-        // Soil pH amendment
-        if (state.soilPh < 6.0) {
-          dom.amendmentTitle.textContent = "Acidic Soil Correction / அமில மண் சீர்திருத்தம்";
-          dom.amendmentStatus.textContent = `Acidic (pH ${state.soilPh.toFixed(1)})`;
-          dom.amendmentStatus.className = "text-xs font-bold text-amber-600 dark:text-amber-400";
-          dom.amendmentDesc.textContent = "Apply 200 kg agricultural lime or dolomite per acre during summer plowing. Avoid applying with phosphate fertilizer simultaneously.";
-          dom.soilAmendmentCard.className = "p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 flex items-start gap-4";
-        } else if (state.soilPh > 8.0) {
-          dom.amendmentTitle.textContent = "Alkaline / Saline Soil Correction / கார மண் சீர்திருத்தம்";
-          dom.amendmentStatus.textContent = `Alkaline (pH ${state.soilPh.toFixed(1)})`;
-          dom.amendmentStatus.className = "text-xs font-bold text-rose-600 dark:text-rose-400";
-          dom.amendmentDesc.textContent = "Apply 250 kg gypsum per acre followed by heavy leaching irrigation. Grow green manure crops like Daincha (தக்கைப்பூண்டு) and incorporate into soil.";
-          dom.soilAmendmentCard.className = "p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 flex items-start gap-4";
-        } else {
-          dom.amendmentTitle.textContent = "Soil pH Balance / மண் கார அமிலத்தன்மை";
-          dom.amendmentStatus.textContent = `Optimal (pH ${state.soilPh.toFixed(1)})`;
-          dom.amendmentStatus.className = "text-xs font-bold text-emerald-600 dark:text-emerald-400";
-          dom.amendmentDesc.textContent = "Current soil pH is in the optimal window (6.0 - 7.5). Soil nutrients are easily available to roots. No chemical soil amendments needed.";
-          dom.soilAmendmentCard.className = "p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 flex items-start gap-4";
-        }
-      }
-
-      function applySoilPreset(type) {
-        if (type === 'alluvial') {
-          state.soilN = 310;
-          state.soilP = 24;
-          state.soilK = 210;
-          state.soilPh = 6.8;
-        } else if (type === 'black') {
-          state.soilN = 210;
-          state.soilP = 14;
-          state.soilK = 320;
-          state.soilPh = 7.8;
-        } else if (type === 'red') {
-          state.soilN = 190;
-          state.soilP = 9;
-          state.soilK = 130;
-          state.soilPh = 6.2;
-        } else if (type === 'saline') {
-          state.soilN = 170;
-          state.soilP = 12;
-          state.soilK = 260;
-          state.soilPh = 8.6;
-        }
-
-        dom.sliderSoilN.value = state.soilN;
-        dom.sliderSoilP.value = state.soilP;
-        dom.sliderSoilK.value = state.soilK;
-        dom.sliderSoilPh.value = state.soilPh;
-        updateSoilLabUI();
-      }
-
-      // -------------------------------------------------------------
-      // 7. CHART.JS CROP ANALYTICS VISUALIZATION
+      // 8. CHART.JS CROP ANALYTICS VISUALIZATION
       // -------------------------------------------------------------
       function updateChart() {
         if (!dom.climateChartCanvas) return;
@@ -2085,7 +2702,7 @@
       }
 
       // -------------------------------------------------------------
-      // 8. TAB SWITCHING
+      // 9. TAB SWITCHING
       // -------------------------------------------------------------
       function switchTab(targetTab) {
         if (!dom.tabContents[targetTab]) return;
@@ -2115,7 +2732,7 @@
         if (targetTab === 'analytics') {
           setTimeout(updateChart, 50);
         } else if (targetTab === 'soil') {
-          updateSoilLabUI();
+          calculateAndRenderSoilPrescription();
         } else if (targetTab === 'tasks') {
           renderTasks();
           updateWeatherTaskSuggestion();
@@ -2123,7 +2740,7 @@
       }
 
       // -------------------------------------------------------------
-      // 9. FIELD TASKS & LOCALSTORAGE
+      // 10. FIELD TASKS & LOCALSTORAGE
       // -------------------------------------------------------------
       function renderTasks() {
         dom.tasksListContainer.innerHTML = '';
@@ -2249,13 +2866,19 @@
       }
 
       // -------------------------------------------------------------
-      // 10. PUBLIC INTERFACE
+      // 11. PUBLIC INTERFACE
       // -------------------------------------------------------------
       return {
         init,
         switchTab,
         setWeatherPreset,
-        applySoilPreset,
+        switchSoilMode,
+        loadSampleSoilReport,
+        handleSoilFileUpload,
+        analyzeCurrentSoilReport,
+        saveSoilReportToHistory,
+        loadSavedSoilReport,
+        deleteSavedSoilReport,
         toggleTask,
         addTask,
         deleteTask,
