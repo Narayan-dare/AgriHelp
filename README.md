@@ -1,41 +1,48 @@
 # AgriHelp Mini / அக்ரிஹெல்ப் மினி 🌾🚜
 
-**AgriHelp Mini** is a modern, responsive, and bilingual (English / Tamil) precision farm advisory dashboard engineered for South Indian farmers and agricultural researchers. It combines micro-climate simulation, soil lab report diagnostics (NPK & pH), and growth-stage-specific agronomic rules to deliver real-time corrective actions and pest/disease warnings.
+**AgriHelp Mini** is a modern, responsive, and bilingual (English / Tamil) precision farm advisory dashboard engineered for South Indian farmers, agronomists, and agricultural researchers. It combines real-time micro-climate simulation, an intelligent **Soil Report Adder & Scientific Analyzer**, growth-stage phenology monitoring, and weather-triggered field action checklists.
 
 ---
 
 ## 🌟 Key Features / முக்கிய சிறப்பம்சங்கள்
 
-- 🌐 **Full Bilingual Support (English / தமிழ்)**: Complete interface and advisory recommendations presented with English primary and Tamil secondary translations.
-- 🌾 **South Indian Crop Coverage**: Built-in agronomic profiles for:
+- 🌐 **Full Bilingual Support (English / தமிழ்)**: Complete interface and recommendations presented with prominent English headings and refined Tamil subtitles.
+- 🌾 **South Indian Cultivars Supported**:
   - **Rice (நெல்)** - *Oryza sativa*
   - **Cotton (பருத்தி)** - *Gossypium*
   - **Sugarcane (கரும்பு)** - *Saccharum officinarum*
   - **Ragi / Finger Millet (கேழ்வரகு)**
   - **Coconut Palm (தென்னை)**
   - **Groundnut (நிலக்கடலை)**
-- 🌡️ **Interactive Climate Simulator**: Real-time sliders for temperature (°C), soil moisture (%), air humidity (%), and soil pH to simulate micro-climates.
-- 🧪 **Soil Lab NPK & pH Diagnostics**: Interactive soil test report analysis with automated fertilizer correction recommendations (Urea, SSP/DAP, MOP, Lime/Gypsum).
+- 🧪 **Soil Report Adder & Scientific Lab Analyzer**:
+  - **File Upload & Text Parser**: Drag-and-drop or paste raw Soil Health Card / TNAU lab test readings.
+  - **1-Click Regional Presets**: Load official test profiles for *Delta Alluvial Soil*, *Coimbatore Black Cotton Soil*, *Madurai Red Loamy Soil*, or *Coastal Saline Soil*.
+  - **Dynamic Agronomic Prescription**: Calculates exact dosages of **Urea (46% N)**, **DAP / SSP**, and **MOP (Potash)** in kg/acre and standard bags.
+  - **Biofertilizer & Reclamation Protocol**: Organic carbon enrichment (FYM/Vermicompost), bio-inoculants (*Azospirillum*, *Phosphobacteria*), and lime/gypsum soil amendments.
+  - **Printable Soil Health Card**: Format-ready printable view for field records.
+  - **Report History**: Persistent local storage of tested plots.
+- 🌡️ **Interactive Climate Simulator**: Real-time sliders for temperature (°C), soil moisture (%), air humidity (%), and soil pH.
 - 🚨 **Multi-Tier Advisory Engine**:
-  - Global Heat Waves & Extreme Weather Alerts
-  - Critical Crop Stress Warnings
-  - Fungal Disease & Pest Outbreak Indicators (e.g., Whitefly, Blast)
-- 📊 **Analytics & Stage Monitoring**: Real-time metrics, growth-stage transitions, and interactive soil composition graphs.
-- 🌓 **Day / Dark Mode**: Fluid theme toggle with glassmorphism and modern UI aesthetics.
+  - Extreme Heat Stress Alerts (> 35°C–38°C)
+  - Critical Moisture Deficit / Waterlogging Warnings
+  - Fungal Disease & Pest Outbreak Indicators (Blast, Whitefly, Red rot)
+- 📊 **Dynamic Analytics Chart**: Interactive Chart.js dual-axis monitoring curve showing simulated climate vs crop physiological thresholds.
+- 📋 **Weather-Aware Field Tasks**: Daily checklist with automatic suggestions based on active weather simulations.
+- 🌓 **Day / Dark Mode**: Fluid theme toggle with modern glassmorphism aesthetics.
 
 ---
 
 ## 🚀 Getting Started / தொடங்குவது எப்படி
 
 ### Prerequisites
-No complex framework dependencies required! All you need is a modern web browser and Python (or any static HTTP file server).
+No build steps or complex framework installations needed! All you need is a modern web browser and Python (or any static HTTP server).
 
 ### Quick Run Locally
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/<your-username>/agrihelp-mini.git
-   cd agrihelp-mini
+   git clone https://github.com/Narayan-dare/AgriHelp.git
+   cd AgriHelp
    ```
 
 2. **Start the local HTTP server**:
@@ -51,9 +58,9 @@ No complex framework dependencies required! All you need is a modern web browser
 ## 📁 Project Structure
 
 ```
-agrihelp-mini/
+AgriHelp/
 ├── index.html       # Single-page application containing HTML5, Tailwind CSS, & dynamic JS rules
-├── README.md        # Documentation and guide (Bilingual)
+├── README.md        # Comprehensive documentation (Bilingual)
 └── .gitignore       # Git ignore file
 ```
 
@@ -61,10 +68,11 @@ agrihelp-mini/
 
 ## 🛠️ Built With
 
-- **HTML5 & Vanilla JavaScript**: High performance, zero build step required.
-- **Tailwind CSS**: Modern utility-first responsive styling with dark mode support.
-- **FontAwesome**: Scalable vector icons.
-- **Chart.js**: Dynamic real-time agricultural analytics and soil radar/bar visualizations.
+- **HTML5 & Vanilla JavaScript**: High performance, zero build dependencies.
+- **Tailwind CSS**: Modern utility-first responsive styling with dark mode.
+- **Plus Jakarta Sans**: High-legibility modern typography.
+- **FontAwesome 6**: Scalable vector icons.
+- **Chart.js**: Dynamic real-time agricultural analytics visualizations.
 
 ---
 
